@@ -131,7 +131,7 @@ public class EventInfoCollection extends MongodbCollection{
      * @param keepdays 保留多少天内的数据
      */
     public long houseKeeping(int keepdays){
-        Date begin = new Date(new Date().getTime() - (keepdays * 24 * 3600 * 1000));
+        Date begin = new Date(System.currentTimeMillis() - (keepdays * 24 * 3600 * 1000));
         return deleteMany(new Document("created",new Document("$lte", begin))).getDeletedCount();
     }
 

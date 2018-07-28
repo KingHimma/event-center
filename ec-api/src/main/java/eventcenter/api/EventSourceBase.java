@@ -5,7 +5,6 @@
 package eventcenter.api;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.EventObject;
 
 
@@ -49,7 +48,7 @@ public abstract class EventSourceBase extends EventObject{
 
 	public EventSourceBase(Object source, String eventId, String eventName, String mdcValue) {
 		super(source);
-		this.timestamp = new Date().getTime();
+		this.timestamp = System.currentTimeMillis();
 		this.eventName = eventName;
 		this.eventId = eventId;
 		this.mdcValue = mdcValue;

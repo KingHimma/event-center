@@ -90,7 +90,7 @@ public class TestIndexConfigCollection {
         Assert.assertEquals(true, collection.cache.containsKey(collection.buildCacheKey(eventName, group)));
 
         ExpiryMap.ExpiryValue<IndexConfig> ev = collection.cache.get(collection.buildCacheKey(eventName, group));
-        Date date = new Date(new Date().getTime() - (1200 * 1000));
+        Date date = new Date(System.currentTimeMillis() - (1200 * 1000));
         collection.cache.put(collection.buildCacheKey(eventName, group), ExpiryMap.ExpiryValue.build(date, 60000, ev.getValue()));
 
         ic = collection.queryByEventName(eventName, group);
