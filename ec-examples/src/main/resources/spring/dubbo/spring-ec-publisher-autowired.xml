@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:application name="ec-sample-publisher"/>
+	<dubbo:registry protocol="zookeeper"  address="localhost:2181" />
+    
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="eventcenter.remote.dubbo">
+	</context:component-scan>
+	<context:component-scan base-package="eventcenter.api"></context:component-scan>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- SAFPublishEventCenter使用的是Store And Forward事件推送中心 -->
+	<bean id="publisher" class="eventcenter.remote.saf.SAFPublishEventCenter">
+		<property name="eventPublisher">
+			<bean class="eventcenter.remote.dubbo.publisher.DubboRegistryEventPublisher">
+				<property name="devMode" value="false"></property>
+				<property name="copySendUnderSameVersion" value="false"/>
+				<property name="expiryOffline" value="100000"></property>
+				<property name="dubboGroup" value="test"></property>
+			</bean>
+		</property>
+		<!-- 下面这个属性可以不配置，如果不配置将使用默认的Policy，默认为下面的配置, 这个是Store And Forward机制 -->
+		<property name="safPolicy">
+			<bean class="eventcenter.remote.saf.simple.SimpleStoreAndForwardPolicy">
+				<property name="storeOnSendFail" value="true"></property>
+				<property name="checkInterval" value="10000"></property>
+			</bean>
+		</property>
+	</bean>
+</beans>

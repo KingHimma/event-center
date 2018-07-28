@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:application name="${dubbo.application.name}" />     
+    <dubbo:registry address="${dubbo.registry.address}"></dubbo:registry>
+    
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="eventcenter.monitor.server"></context:component-scan>
+    
+    <dubbo:protocol name="dubbo" port="2066"></dubbo:protocol>
+	<!-- 由于使用了dubbo.properties混合的方式配置，所以需要加入这个配置 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesMode">  
+            <value>1</value>  
+        </property>  
+        <property name="searchSystemEnvironment">  
+            <value>true</value>  
+        </property>  
+    </bean>
+
+    <bean id="mongodb" class="com.mongodb.client.MongoDatabase" factory-bean="mongodbFactory" factory-method="initConnections"></bean>
+
+    <bean id="mongodbFactory" class="eventcenter.monitor.server.mongo.MongodbClientFactory">
+        <property name="databaseName" value="ec"></property>
+        <property name="host" value="127.0.0.1"></property>
+        <property name="port" value="27017"></property>
+    </bean>
+
+    <dubbo:service interface="eventcenter.monitor.InfoForward" id="infoForward" version="monitor_0.0.1" ref="infoForwardServer"></dubbo:service>
+
+</beans>

@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eventcenter</groupId>
+		<artifactId>ec</artifactId>
+		<version>1.6-SNAPSHOT</version>
+	</parent>
+	<artifactId>ec-remote-dubbo</artifactId>
+	<name>EC Remote Dubbo</name>
+	<description>使用Dubbo开源组件实现EC的分布式系统</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>zkclient</groupId>
+			<artifactId>zkclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ec-remote</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<maven.test.skip>true</maven.test.skip>
+	</properties>
+</project>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 这个配置主要演示了，配置log monitor -->
+
+	<!-- 这个示例演示了，spring的配置中，可以不需要显示的声明dubbo:application和dubbo:registry的节点配置dubbo，可以在conf的dubbo节点中设置这些信息即可 -->
+    <bean class="eventcenter.builder.ExampleService"></bean>
+	<context:component-scan base-package="eventcenter.builder.listeners"></context:component-scan>
+
+	<!-- 设置dubbo的application信息 -->
+	<dubbo:application name="builder-test" owner="jackyLiu"></dubbo:application>
+	<dubbo:registry address="localhost:2181" protocol="zookeeper" ></dubbo:registry>
+	<dubbo:protocol host="127.0.0.1" port="21882" ></dubbo:protocol>
+
+	<!-- 这个是配置了dubbo的subscriber，通过静态的方式，直接建立subscriber的EventTransmission接口的service-->
+	<!-- 这里只需要在conf的group中设置，如果针对不同的publish设置不同的group，需要在dubboPublish中进行配置 -->
+	<conf group="test_log" xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<!-- 作为消费者，dubbo的基本配置已移至dubbo:application,dubbo:registry和dubbo:protocol中 -->
+		<dubbo>
+			<!-- 这里配置的是订阅器主动订阅发布端的事件，所以一定需要配置上eventNames -->
+			<dubboSubscribe eventNames="example.annotation" version="subscriber-test"></dubboSubscribe>
+		</dubbo>
+		<logMonitor nodeName="testSubscriber" heartbeatInterval="10000"></logMonitor>
+	</conf>
+</beans>

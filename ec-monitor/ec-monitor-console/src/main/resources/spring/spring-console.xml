@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+       <dubbo:application name="${dubbo.application.name}" />
+       <dubbo:registry address="${dubbo.registry.address}"></dubbo:registry>
+
+       <dubbo:protocol name="dubbo" host="${dubbo.host}" port="${dubbo.port}"></dubbo:protocol>
+
+       <bean id="mongodb" class="com.mongodb.client.MongoDatabase" factory-bean="mongodbFactory" factory-method="initConnections"></bean>
+
+       <bean id="mongodbFactory" class="eventcenter.monitor.server.mongo.MongodbClientFactory">
+              <property name="databaseName" value="${mongodb.name}"></property>
+              <property name="host" value="${mongodb.host}"></property>
+              <property name="port" value="${mongodb.port}"></property>
+       </bean>
+
+       <dubbo:service interface="eventcenter.monitor.InfoForward" id="infoForward" version="${dubbo.server.forward.version}" ref="infoForwardServer" timeout="${dubbo.server.forward.timeout}" async="true"></dubbo:service>
+
+</beans>

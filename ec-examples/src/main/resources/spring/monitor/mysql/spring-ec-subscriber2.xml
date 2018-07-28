@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:application name="${dubbo.application.name}" />     
+    <dubbo:registry address="${dubbo.registry.address}"></dubbo:registry>
+    
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="eventcenter">
+        <context:exclude-filter type="regex" expression="eventcenter.monitor.server.*"/>
+    </context:component-scan>
+	<context:component-scan base-package="eventcenter.monitor.listeners"></context:component-scan>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- 事件传送的实例，此实例实现了EventTransmission接口 -->
+	<bean id="subscriber" class="eventcenter.remote.subscriber.EventSubscriber">
+        <constructor-arg ref="eventCenter"></constructor-arg>
+        <property name="subscriberGroups">
+            <list>
+                <bean class="eventcenter.remote.SubscriberGroup">
+                    <!-- 订阅事件分组，要和dubbo的group保持一致 -->
+                    <property name="groupName" value="${dubbo.service.group}"></property>
+                    <!-- 订阅指定的事件名称，支持通配符* -->
+                    <property name="remoteEvents" value="example.manual,trade.consign"></property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <dubbo:protocol name="dubbo" port="2089"></dubbo:protocol>
+	
+	<!-- SAFPublishEventCenter使用的是Store And Forward事件推送中心 -->
+	<bean id="eventCenter" class="eventcenter.api.support.DefaultEventCenter">
+	</bean>
+	
+	<!-- 这里没有设置group，因为在dubbo.properties中设置了，但是如果dubbo.properties没有设置，请在这个节点中设置group属性，group属性需要和事件发布端的dubboGroup保持一致 -->
+    <dubbo:service id="eventTransmission" interface="eventcenter.remote.EventTransmission" version="1.0.0_test" ref="subscriber">
+        <dubbo:method name="asyncTransmission" async="true" return="false" ></dubbo:method>
+        <dubbo:method name="checkHealth"></dubbo:method>
+    </dubbo:service>
+    
+    <!-- 这里还需要配置事件订阅器服务 -->
+    <!-- 这里没有设置group，因为在dubbo.properties中设置了，但是如果dubbo.properties没有设置，请在这个节点中设置group属性，group属性需要和事件发布端的dubboGroup保持一致 -->
+    <dubbo:service id="eventSubscriber" interface="eventcenter.remote.EventSubscriber" version="1.0.0_test" ref="subscriber" ></dubbo:service>
+
+	<!-- 由于使用了dubbo.properties混合的方式配置，所以需要加入这个配置 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesMode">  
+            <value>1</value>  
+        </property>  
+        <property name="searchSystemEnvironment">  
+            <value>true</value>  
+        </property>  
+    </bean>
+
+    <bean id="ecConfig" class="eventcenter.api.EventCenterConfig">
+        <property name="openLoggerMdc" value="true"></property>
+        <property name="loggerMdcField" value="clueId"></property>
+        <property name="queueEventContainerFactory">
+            <bean class="eventcenter.leveldb.LevelDBContainerFactory">
+                <property name="corePoolSize" value="20"></property>
+                <property name="maximumPoolSize" value="300"></property>
+                <property name="path" value="./target/monitor/sub2"></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="dataSource"
+          class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/erp?useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull"/>
+        <property name="username" value="eventcenter"/>
+        <property name="password" value="xxxxx"></property><!-- 密码自行修改 -->
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="filters" value="stat,config"/>
+        <property name="maxActive" value="10"/>
+        <property name="initialSize" value="5"/>
+        <property name="maxWait" value="30000"/>
+        <property name="minIdle" value="1"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3000"/>
+        <property name="minEvictableIdleTimeMillis" value="30000"/>
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="poolPreparedStatements" value="false"/>
+    </bean>
+
+    <!-- 初始化客户端的监控模块 -->
+    <bean id="ecMonitor" class="eventcenter.monitor.mysql.MySqlControlMonitor">
+        <property name="group" value="test"></property>
+        <property name="nodeName" value="sub_test"></property>
+        <property name="controlMonitorDataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 监控数据采集使用的是ec的filter组件，所以需要在spring配置文件中配置这个filter -->
+    <bean id="ecFilter" class="eventcenter.monitor.client.filter.ListenerExecutedFilter"></bean>
+    <!-- 如果使用了分布式事件，这个过滤器用于监控事件发送的和接收的统计信息 -->
+    <bean id="remoteFilter" class="eventcenter.monitor.client.filter.RemoteFilter"></bean>
+    <!-- 触发了fireEvent的拦截器 -->
+    <bean id="fireFilter" class="eventcenter.monitor.mysql.MySqlEventFireFilter">
+        <property name="controlMonitorDataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 事件订阅器启动时的拦截器 -->
+    <bean id="subscriberStartupFilter" class="eventcenter.monitor.mysql.MySqlSubscriberStartupFilter">
+        <property name="controlMonitorDataSource" ref="dataSource"></property>
+    </bean>
+</beans>

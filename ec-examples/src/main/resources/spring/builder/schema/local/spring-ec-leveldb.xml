@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+    <bean class="eventcenter.builder.ExampleService"></bean>
+	<context:component-scan base-package="eventcenter.builder.listeners"></context:component-scan>
+
+	<!-- 这个是最基础的配置，默认初始化DefaultEventCenter实例 -->
+	<conf xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<queue>
+			<!-- queue配置下，需要选择设置一个容器的类型，例如leveldbQueueContainer，这里大多数的配置都不需要配置，但是有几个重要的需要设置下 -->
+			<!-- maximumPoolSize运行容器线程池的最大线程数，corePoolSize线程池初始化的线程数，openTxn是否开启事务，也就是可以保证在系统宕机或者进程被kill时，对那些未执行并且在线程池的阻塞队列，或者时正在执行中的事件，在下次启动时，依然可以继续执行-->
+			<leveldbQueueContainer maximumPoolSize="10" corePoolSize="2" openTxn="true"></leveldbQueueContainer>
+		</queue>
+	</conf>
+</beans>

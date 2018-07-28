@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>API调用示例</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link rel="stylesheet"
+	href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap-theme.min.css">
+
+
+    <link rel="stylesheet" href="s.css">
+    <script src="jsonformat.js"></script>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+        <script src="http://cdn.bootcss.com/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+<style type="text/css">
+body {
+	padding-top: 20px;
+	padding-bottom: 30px;
+}
+</style>
+</head>
+<body>
+	<div class="container theme-showcase">
+		<div class="jumbotron">
+			<h1>欢迎使用API示例页面</h1>
+			<p>请输入路径，如果请求方式为POST，那么请输入JSON参数。</p>
+			<p>
+				<a
+					href=""
+					class="btn btn-primary btn-lg" role="button" target="_blank">Learn
+					more >></a>
+			</p>
+		</div>
+		<div class="alert alert-danger" style="display:none;" id="alert-div">
+	        
+	      </div>
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<h3 class="panel-title">输入参数</h3>
+			</div>
+			<div class="panel-body">
+				<form class="form-horizontal" role="form" action="javascript:submit();">
+					<div class="form-group">
+						<label for="reqPath" class="col-sm-2 control-label">请求路径</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="reqPath"
+								placeholder="example:/index/hotshopes">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="http_method" class="col-sm-2 control-label">Http
+							Method</label>
+						<div class="col-sm-10">
+							<div class="radio-inline">
+								<label> <input type="radio" name="http_method"
+									id="httpMethod1" checked="true" value="get"> GET
+								</label>
+							</div>
+							<div class="radio-inline">
+								<label> <input type="radio" name="http_method"
+									id="httpMethod2" value="post"> POST
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="reqParams" class="col-sm-2 control-label">请求参数</label>
+						<div class="col-sm-10">
+							<textarea rows="10" class="form-control" id="reqParams"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" onclass="btn btn-default">请求</button>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="respContent" class="col-sm-2 control-label">响应内容</label>
+						<div class="col-sm-10">
+							<textarea rows="10" class="form-control" id="respContent" readonly="readonly"></textarea>
+                            <div id="respContentDiv"></div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script
+		src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+function validateForm(){
+	if($.trim($('#reqPath').val()) == ''){
+		alert("请输入请求路径");
+		return false;
+	}
+	if($.trim($('#reqPath').val()).indexOf('/') != 0){
+		alert("请输入正确的请求路径");
+		return false;
+	}
+	return true;
+}
+
+function submit(){
+	$('#alert-div').html('');
+	$('#alert-div').css("display"," none");
+	$('#respContent').html('');
+	if(!validateForm())
+		return ;
+	var params = {
+			url:$('#reqPath').val(),
+			type: $('input[name="http_method"]:checked').val(),
+			dataType : 'json',
+			success : function(data){
+				if(!data.success){
+					$('#alert-div').html('<strong>请求出错：</strong>, status:200, thrown:'+JSON.stringify(data));
+					$('#alert-div').css('display','block');
+					window.scrollTo(0,0);
+					return ;
+				}
+				$('#respContent').html(JSON.stringify(data));
+                //$("#respContent").hide();
+                //Process();
+				window.scrollTo(0, document.body.scrollHeight);
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				if(XMLHttpRequest.status == 400){
+					$('#alert-div').html('<strong>请求出错：</strong>, status:'+XMLHttpRequest.status+', thrown:'+((XMLHttpRequest.responseText != '')?XMLHttpRequest.responseText:errorThrown));
+					$('#alert-div').css('display','block');
+					window.scrollTo(0,0);
+					return ;
+				}
+				$('#alert-div').html('<strong>请求出错：</strong>, status:'+XMLHttpRequest.status+', thrown:'+errorThrown);
+				$('#alert-div').css('display','block');
+				window.scrollTo(0,0);
+			}
+		};
+	if($.trim($('#reqParams').val()) != '' && params.type == 'post'){
+		var reqParams = {};
+		try{
+			reqParams = JSON.parse($('#reqParams').val());
+		}catch(error){
+			alert(error);
+			return ;
+		}
+		reqParams["api_name"] = params.url;
+		params.data = reqParams;
+	}
+	$.ajax(params);
+}
+</script>
+    <div style="display:none;">
+        <select id="TabSize" onchange="TabSizeChanged()">
+            <type value="1">1</type>
+            <type value="2" selected="true">2</type>
+            <type value="3">3</type>
+            <type value="4">4</type>
+            <type value="5">5</type>
+            <type value="6">6</type>
+        </select>
+        <label for="QuoteKeys">
+            <input type="checkbox" id="QuoteKeys" onclick="QuoteKeysClicked()" checked="true" />
+            引号
+        </label>&nbsp;
+        <a href="javascript:void(0);" onclick="SelectAllClicked()">全选</a>
+        <span id="CollapsibleViewHolder" >
+          <label for="CollapsibleView">
+              <input type="checkbox" id="CollapsibleView" onclick="CollapsibleViewClicked()" checked="true" />
+              显示控制
+          </label>
+      </span>
+      <span id="CollapsibleViewDetail">
+        <a href="javascript:void(0);" onclick="ExpandAllClicked()">展开</a>
+        <a href="javascript:void(0);" onclick="CollapseAllClicked()">叠起</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(3)">2级</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(4)">3级</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(5)">4级</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(6)">5级</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(7)">6级</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(8)">7级</a>
+        <a href="javascript:void(0);" onclick="CollapseLevel(9)">8级</a>
+      </span>
+    </div>
+</body>
+</html>

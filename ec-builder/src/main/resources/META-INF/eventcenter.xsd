@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://code.eventcenter.com/schema/ec"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+            targetNamespace="http://code.eventcenter.com/schema/ec" >
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://code.alibabatech.com/schema/dubbo"/>
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool"/>
+
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[ Namespace support for the event center configuration provided by event center framework. ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="abstractMethodType">
+        <xsd:attribute name="timeout" type="xsd:string" use="optional" default="0">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The method invoke timeout. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="retries" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The method retry times. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="actives" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The max active requests. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="connections" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The exclusive connections. default share one connection. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="loadbalance" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The method load balance. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="async" type="xsd:string" use="optional" default="false">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The method does async. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="sent" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The async method return await message sent ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="mock" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ Use service mock implemention. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="merger" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The multi-group result merger ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="validation" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ Use service jsr303 validation, true/false. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="cache" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ Use service cache, lru/threadlocal/jcache. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractInterfaceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractMethodType">
+                <xsd:attribute name="id" type="xsd:ID">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The unique identifier for a bean. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="local" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Use service local implemention. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="stub" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Use service local implemention. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="proxy" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Use proxy factory. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="cluster" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Use cluster strategy. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="filter" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The filter. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="listener" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The listener. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="owner" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The owner. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="layer" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ layer info. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="application" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service application. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="module" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service module. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="registry" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service registry. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="monitor" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service monitor. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="callbacks" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The callback instance limit peer connection.]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="onconnect" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service client connected. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="ondisconnect" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service client disconnected. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="scope" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Defines the service visibility, choise:[local remote]. default is remote, which can be invoked by network。  ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractReferenceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractInterfaceType">
+                <xsd:attribute name="version" type="xsd:string" use="optional" default="0.0.0">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service version. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="group" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service group. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="check" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Check dependency providers. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="init" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Eager init reference. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="generic" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Generic service. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="injvm" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[Deprecated. Replace to  set scope=local ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="sticky" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Enable/Disable cluster sticky policy.Default false ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="reconnect" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ remoting reconnect timer. false represent close reconnect. integer represent interval(ms) .default true(2000ms).]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="lazy" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ lazy create connection. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractServiceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractInterfaceType">
+                <xsd:attribute name="register" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service can be register to registry. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="version" type="xsd:string" use="optional" default="0.0.0">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service version. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="group" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service group. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="deprecated" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ whether the service is deprecated. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="delay" type="xsd:string" use="optional" default="0">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ The service export delay millisecond. ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="export" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ The service is export. ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="weight" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ The service weight. ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="document" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ The service document. ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="dynamic" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ the service registered to the registry is dynamic(true) or static(false). ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="token" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service use token. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="accesslog" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service use accesslog. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="executes" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service allow execute requests. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="protocol" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The service protocol. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractStoreAndForwardPolicy">
+        <xsd:attribute name="storeOnSendFail" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ storeOnSendFail，如果设置为true，那么当事件发送到远程端失败时，将失败的事件推入缓存队列中；如果为false，那么事件首先推入到缓存队列中，然后由后台的守护线程一个个的出队列，并发送到远程端。 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="checkInterval" type="xsd:long" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ checkInterval为SAF中的WatchDog看门狗程序监控服务端的健康状态的时间间隔，单位为毫秒，默认为60000毫秒 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractQueueContainer">
+        <xsd:attribute name="corePoolSize" type="xsd:int" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ set corePoolSize to thread pool in container. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="queueCapacity" type="xsd:int" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ set queueCapacity to thread pool in container. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="maximumPoolSize" type="xsd:int" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ set maximumPoolSize to thread pool in container. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractMonitorConfig">
+        <xsd:attribute name="saveEventData" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 是否记录事件数据，目前不可用 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="heartbeatInterval" type="xsd:long" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 事件中心的监控心跳数据，心跳数据主要包含了事件节点的状态，已经运行容器的指标，例如队列大小，正在运行的线程数等等，单位毫秒 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="nodeName" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 监控节点的名称，每个事件中心的节点名称尽可能的不要一样，这个是必要配置 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="simpleQueueContainer" type="abstractQueueContainer"></xsd:element>
+
+    <xsd:element name="leveldbQueueContainer">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractQueueContainer">
+                    <xsd:attribute name="checkInterval" type="xsd:long" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ leveldb的队列使用的是游标的方式管理数据，游标包括读、写和删，删除的游标是根据时间间隔扫描以及读取的阀值触发，checkInterval是删除游标的间隔，单位毫秒，默认是10000毫秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="path" type="xsd:string" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ path为leveldb的数据库文件路径，默认为 ${user.home}/ecleveldb路径，可不配置 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="levelDBName" type="xsd:string" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ leveldb的数据库名称，如果当前path下存在多个数据库实例，可以配置这个名称进行区分，leveldb会根据名称自动添加子目录，这个配置一般不用设置 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="readLimitSize" type="xsd:int" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 这个是读取的阀值，默认为1000条消息 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="openTxn" type="xsd:boolean" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 默认为false，开启事务性的队列读取模式，当从队列取出元素时，将会记录到事务队列中，一旦事件没有执行完，下次启动服务将会重新执行取出队列并且未执行的完的事件 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="keepAliveTime" type="xsd:int" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 这个值表示leveldb的运行容器中的线程池的keepAliveTime值，单位秒，默认为60秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="blockingQueueFactor" type="xsd:string" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ leveldb的运行容器中的线程池的阻塞队列的blockingQueueSize配置，可以通过这个blockingQueueFactor来设定，公式为blockingQueueSize = maximumPoolSize * blockingQueueFactor，默认为0.1 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="loopQueueInterval" type="xsd:long" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 容器查询队列是否有新的值的一个循环间隔时间，单位毫秒，默认为1000毫秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="openLevelDbLog" type="xsd:boolean" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 是否开启leveldb的日志 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="aggregatorThreadPoolInfo">
+        <xsd:attribute name="eventNames" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 并发聚合运行容器的线程池运行的事件，这个用于多个并发容器的通用配置 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="corePoolSize" type="xsd:int" use="required">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 并发聚合运行容器的线程池的初始化的核心容量，这个用于多个并发容器的通用配置 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="maximumPoolSize" type="xsd:int" use="required">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 并发聚合运行容器的线程池的最大容量，这个用于多个并发容器的通用配置 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="multiAggregator">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element minOccurs="0" maxOccurs="unbounded" ref="threadPoolInfo"></xsd:element>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="publishType">
+        <xsd:attribute name="localEventNames" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ 使用这个配置，将会为PublishEventCenter添加LocalPublisherGroup，当某个事件从发布端触发时，如果发布端本地也有事件监听器需要消费，则需要配置这个属性。支持通配符*，如果设置为*，那么所有发布出去的事件都会在本地寻找相关的监听器进行消费 ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="dubboSubscriberServiceConfig">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractServiceType">
+                    <xsd:attribute name="checkHealthTimeout" type="xsd:int" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ dubbo:reference interface=IEventTransmission 其中的方法中checkHealthTimeout，调用dubbo远程端的超时时间，单位毫秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="eventTransmission">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractReferenceType">
+                    <xsd:attribute name="checkHealthTimeout" type="xsd:int" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ dubbo:reference interface=IEventTransmission 其中的方法中checkHealthTimeout，调用dubbo远程端的超时时间，单位毫秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="multi" type="multiAggregator"></xsd:element>
+
+    <xsd:element name="threadPoolInfo" type="aggregatorThreadPoolInfo"></xsd:element>
+
+    <xsd:element name="aggregator">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element minOccurs="0" maxOccurs="unbounded" ref="multi"></xsd:element>
+            </xsd:choice>
+            <xsd:attribute name="corePoolSize" type="xsd:int" use="required">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 并发聚合运行容器的线程池的初始化的核心容量 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="maximumPoolSize" type="xsd:int" use="required">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 并发聚合运行容器的线程池的最大容量 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="queue">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element minOccurs="0" maxOccurs="1" ref="simpleQueueContainer"/>
+                <xsd:element minOccurs="0" maxOccurs="1" ref="leveldbQueueContainer"/>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="saf">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element minOccurs="0" maxOccurs="1" ref="simpleSaf"/>
+                <xsd:element minOccurs="0" maxOccurs="1" ref="leveldbSaf"/>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="dubboPublishGroup">
+        <xsd:complexType>
+            <xsd:choice minOccurs="1" maxOccurs="1">
+                <xsd:element minOccurs="1" maxOccurs="1" ref="eventTransmission"></xsd:element>
+            </xsd:choice>
+            <xsd:attribute name="group" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 这个配置的是dubbo:reference中的group属性，优先使用这个节点下的配置，如果没有配置，那么使用ec:conf中的group配置。建议统一在ec:conf中配置group ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="remoteEvents" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 如果发布端和订阅端使用的是静态的订阅方式，那么需要在发布端直接引用消费端的IEventTransmission，由发布端这边设置remoteEvents事件 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="dubboPublish">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="publishType">
+                    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element ref="dubboPublishGroup" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+                    </xsd:choice>
+                    <xsd:attribute name="group" type="xsd:string" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 这个配置的是dubbo:reference中的group属性，优先使用这个节点下的配置，如果没有配置，那么使用ec:conf中的group配置。建议统一在ec:conf中配置group ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="asyncFireRemote" type="xsd:boolean" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 是否使用异步触发事件，默认为false ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="copySendUnderSameVersion" type="xsd:boolean" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 可选配置，默认为false，这个表示，当订阅端的dubbo version为同一个时，那么事件将通过dubbo的注册中心控制发送到相关的服务端，如果为true，那么将会对dubbo同一个version的每个服务节点都发送事件。由于Dubbo本身对于同一个版本下的接口，他会自动做负载均衡，copySendUnderSameVersion属性默认为false，那么当有多个相同dubbo版本的订阅者存在时，这里发布者发出的事件只会路由到其中的一个订阅者中，如果需要发布到每个订阅者中，那么将这个属性配置为true ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="devMode" type="xsd:boolean" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 当这个devMode为true时，表示开发模式，那么事件发布者只接收当前机器的订阅者的订阅事件。为了方便开发，可以将这个值设置为true，那么发布者只会将事件发布到本地机器的订阅者中 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="expiryOffline" type="xsd:long" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 设置离线时长，一旦发生队列连接不上的问题时，将采用离线推送模式，但是需要设置离线时长，以确保有些离线只是人为切换队列或者其他原因，单位秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="subscriberAutowired" type="xsd:boolean" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 是否开启自动订阅，默认为false，如果开启，发布端不用配置dubboPublishGroup ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="dubboSubscribe">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element ref="dubboSubscriberServiceConfig" minOccurs="0" maxOccurs="unbounded" ></xsd:element>
+            </xsd:choice>
+            <!-- 订阅的事件名称，如果不设置，则需要设置version或者dubboSubscriberServiceConfig -->
+            <xsd:attribute name="eventNames" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ 订阅的事件名称，多个事件使用','逗号分隔，设置这个值之后，将会创建EventSubscriber对象，并自动创建dubbo:service，由事件发布者监听 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <!-- 如果未设置dubboSubscriberServiceConfig属性时，则需要设置version，一般dubboSubscriberServiceConfig中的group等dubbo基础信息不需要设置，直接配置dubboVersion即可 -->
+            <xsd:attribute name="version" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:service中的version属性设置，其中group属性来自ec:conf中的group，interface设置为eventcenter.remote.IEventTransmission ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="dubbo">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element minOccurs="0" maxOccurs="1" ref="dubboPublish"></xsd:element>
+                <xsd:element minOccurs="0" maxOccurs="1" ref="dubboSubscribe"></xsd:element>
+            </xsd:choice>
+            <xsd:attribute name="applicationName" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:application中的name属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="applicationOwner" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:application中的owner属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="protocolName" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:protocol中的name属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="protocolHost" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:protocol中的host属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="protocolPort" type="xsd:int" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:protocol中的port属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="registryProtocol" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:registry中的protocol属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="registryAddress" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:registry中的address属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="registryUsername" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:registry中的username属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="registryPassword" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ dubbo:registry中的password属性设置 ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="simpleSaf">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractStoreAndForwardPolicy">
+                    <xsd:attribute name="queueCapacity" type="xsd:int" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ simpleSaf使用的是线程池，queueCapacity设置的是线程池中的阻塞队列的容量大小 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="leveldbSaf">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractStoreAndForwardPolicy">
+                    <xsd:attribute name="path" type="xsd:string" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ leveldb的数据库文件存放地址，默认为 ${user.home}/.safleveldb目录下 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="readLimitSize" type="xsd:int" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 这个是levelDb队列的数据清理的触发的条数 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="levelDBName" type="xsd:string" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ leveldb的数据库名称，如果当前path下存在多个数据库实例，或者是多个队列（一般使用再saf中，saf中会创建多个队列，映射到不同的远程端），可以配置这个名称进行区分，leveldb会根据名称自动添加子目录，这个配置一般不用设置 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="houseKeepingInterval" type="xsd:long" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 这个是levelDb队列的数据清理的触发的时间间隔，单位毫秒 ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="logMonitor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractMonitorConfig"></xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="mysqlMonitor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractMonitorConfig">
+                    <xsd:attribute name="dataSourceBeanId" type="xsd:string" use="required">
+                        <xsd:annotation>
+                            <xsd:documentation><![CDATA[ 配置MySQL的数据库连接池的Spring的引用bean id，需要在spring配置中添加datasource的bean ]]></xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!--<xsd:element name="mixingMonitor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractMonitorConfig">
+                    <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                        <xsd:element ref="logMonitor" minOccurs="0" maxOccurs="1"></xsd:element>
+                        <xsd:element ref="mysqlMonitor" minOccurs="0" maxOccurs="1"></xsd:element>
+                    </xsd:choice>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>-->
+
+    <xsd:element name="conf">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element minOccurs="0" maxOccurs="1" ref="queue"/>
+                <xsd:element minOccurs="0" maxOccurs="1" ref="aggregator"/>
+                <xsd:element minOccurs="0" maxOccurs="1" ref="dubbo"/>
+                <xsd:element minOccurs="0" maxOccurs="1" ref="saf" />
+                <xsd:element minOccurs="0" maxOccurs="1" ref="logMonitor" />
+                <xsd:element minOccurs="0" maxOccurs="1" ref="mysqlMonitor" />
+                <!--<xsd:element minOccurs="0" maxOccurs="1" ref="mixingMonitor" />-->
+            </xsd:choice>
+            <xsd:attribute name="openLoggerMdc" type="xsd:boolean" use="optional" default="false">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ open mdc logger, using log4j's mdc function. and then it should set field of loggerMdcField]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="loggerMdcField" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ set mdc key to get mdc value for logging. ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="group" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[ when using remote event, it should be set for a group of event-center. ]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

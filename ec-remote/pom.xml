@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eventcenter</groupId>
+		<artifactId>ec</artifactId>
+		<version>1.6-SNAPSHOT</version>
+	</parent>
+	<artifactId>ec-remote</artifactId>
+	<name>EC Remote</name>
+	<description>实现EC分布式调用的基础接口和实现</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ec-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<maven.test.skip>true</maven.test.skip>
+	</properties>
+</project>

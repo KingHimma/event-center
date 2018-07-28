@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- 这个eventcenter需要配置，用于事件注册器能够自动扫描到监听器并注入进事件中心 -->
+
+	<context:component-scan base-package="eventcenter.leveldb.tx"></context:component-scan>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<bean id="ecConfig" class="eventcenter.api.EventCenterConfig">
+		<property name="queueEventContainerFactory">
+			<bean class="eventcenter.leveldb.LevelDBContainerFactory">
+				<property name="corePoolSize" value="20"></property>
+				<property name="maximumPoolSize" value="20"></property>
+				<property name="readLimitSize" value="50"></property>
+				<property name="checkInterval" value="1000"></property>
+				<!-- 开启事务性的队列读取模式，当从队列取出元素时，将会记录到事务队列中，一旦事件没有执行完，下次启动服务将会重新执行取出队列并且未执行的完的事件 -->
+				<property name="openTxn" value="true"></property>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- 默认的事件中心 -->
+	<bean id="defaultEventCenter" class="eventcenter.api.support.DefaultEventCenter"></bean>
+</beans>

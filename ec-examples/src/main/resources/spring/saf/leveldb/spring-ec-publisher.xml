@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:application name="ec-sample-publisher"/>
+	<dubbo:registry protocol="zookeeper"  address="localhost:2181" />
+
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="eventcenter"></context:component-scan>
+	<context:component-scan base-package="eventcenter.remote.saf.leveldb">
+		
+	</context:component-scan>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- SAFPublishEventCenter使用的是Store And Forward事件推送中心 -->
+	<bean id="publisher" class="eventcenter.remote.saf.SAFPublishEventCenter">
+		<property name="publisherGroups">
+			<list>
+				<!-- 如果有多个事件订阅端，需要配置多个PublisherGroup，他将会对应于一个订阅段的EventTransmission服务，如果想使用动态方式配置，可以无需配置下面 -->
+				<bean class="eventcenter.remote.publisher.PublisherGroup">
+					<constructor-arg ref="eventTransmission"></constructor-arg>
+					<!-- 使用LevelDBStoreAndForwardPolicy的推送策略时，一定要设置group的name -->
+					<property name="groupName" value="sub1"></property>
+					<!-- 可以使用通配符，配置需要发布出去的事件 -->
+					<property name="remoteEvents" value="example.annotation"></property>
+				</bean>
+				<bean class="eventcenter.remote.publisher.PublisherGroup">
+					<constructor-arg ref="eventTransmission2"></constructor-arg>
+					<!-- 使用LevelDBStoreAndForwardPolicy的推送策略时，一定要设置group的name -->
+					<property name="groupName" value="sub2"></property>
+					<!-- 可以使用通配符，配置需要发布出去的事件 -->
+					<property name="remoteEvents" value="example.annotation"></property>
+				</bean>
+			</list>
+		</property>
+		<!-- 下面这个属性可以不配置，如果不配置将使用默认的Policy，默认为下面的配置, 这个是Store And Forward机制 -->
+		<property name="safPolicy">
+			<bean class="eventcenter.leveldb.saf.LevelDBStoreAndForwardPolicy">
+				<property name="storeOnSendFail" value="true"></property>
+				<property name="checkInterval" value="10000"></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- 发布端只需要知道消费端的EventTransmission服务即可，这个是静态添加的方式，动态添加方式请查看动态的例子 -->
+	<!-- 设置check为false，这样无论订阅端启不启动都无所谓 -->
+	<dubbo:reference id="eventTransmission" interface="eventcenter.remote.EventTransmission" version="ec-sample-1.0.2" check="false" >
+	</dubbo:reference>
+
+	<dubbo:reference id="eventTransmission2" interface="eventcenter.remote.EventTransmission" version="ec-sample-1.0.3" check="false" >
+	</dubbo:reference>
+</beans>

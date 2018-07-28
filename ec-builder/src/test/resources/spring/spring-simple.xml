@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<conf openLoggerMdc="true" loggerMdcField="clueId" group="test" xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<!-- 配置dubbo的发布订阅模式 -->
+		<dubbo applicationName="sample" registryAddress="localhost:2181" registryProtocol="zookeeper">
+			<dubboPublish localEventNames="test">
+				<dubboPublishGroup remoteEvents="test">
+					<eventTransmission version="1.0.0" />
+				</dubboPublishGroup>
+			</dubboPublish>
+		</dubbo>
+		<queue>
+			<!-- 构建leveldb的事件运行容器 -->
+			<leveldbQueueContainer corePoolSize="1" maximumPoolSize="10" openTxn="true"></leveldbQueueContainer>
+		</queue>
+		<!-- 配置并发聚合容器，默认的事件的运行容器的线程池配置设置在aggregator顶层节点属性中，如果需要单独对某些事件配置单独的运行容器，则可以在multi子节点中新增threadPoolInfo节点 -->
+		<aggregator corePoolSize="1" maximumPoolSize="10">
+			<multi>
+				<threadPoolInfo eventNames="test" corePoolSize="1" maximumPoolSize="10"></threadPoolInfo>
+			</multi>
+		</aggregator>
+	</conf>
+</beans>

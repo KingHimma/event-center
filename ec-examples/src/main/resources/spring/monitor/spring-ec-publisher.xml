@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<dubbo:application name="${dubbo.application.name}"/>
+	<dubbo:registry address="${dubbo.registry.address}" ></dubbo:registry>
+    
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="eventcenter">
+		<context:exclude-filter type="regex" expression="eventcenter.monitor.server.*"/>
+	</context:component-scan>
+	<context:component-scan base-package="eventcenter.monitor">
+	</context:component-scan>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+    
+    <dubbo:protocol name="dubbo" port="2090" ></dubbo:protocol>
+
+	<!-- SAFPublishEventCenter使用的是Store And Forward事件推送中心 -->
+	<bean id="publisher" class="eventcenter.remote.saf.SAFPublishEventCenter">
+		<!-- 注意这个配置，如果自动接入的订阅者服务比较多，可以将这个参数开启，这样可以使用非阻塞式的事件发送 -->
+		<property name="asyncFireRemote" value="false"></property>
+		
+		<!-- 请记住，这个属性必须要添加，要注入自动发现的发布策略 -->
+        <property name="eventPublisher" >
+            <bean class="eventcenter.remote.dubbo.publisher.DubboRegistryEventPublisher">
+				<!-- 开启开发模式，事件将只会发布到当前机器的订阅者 -->
+				<property name="devMode" value="true"></property>
+                <!-- 可选配置，默认为false，这个表示，当订阅端的dubbo version为同一个时，那么事件将通过dubbo的注册中心控制发送到相关的服务端，如果为true，那么将会对dubbo同一个version的每个服务节点都发送事件 -->
+                <property name="copySendUnderSameVersion" value="true"></property>
+                <!-- 离线时间，如果连接上的订阅端60秒内没有再次重连，那么将销毁掉离线事件 -->
+                <property name="expiryOffline" value="60"></property>
+                <!-- 分组必须要添加，这个代表事件的不同领域，例如商品服务可以使用item，大卖家服务可以使用dmj -->
+                <property name="dubboGroup" value="test"></property>
+            </bean>
+        </property>
+        
+		<!-- 下面这个属性可以不配置，如果不配置将使用默认的Policy，默认为下面的配置, 这个是Store And Forward机制 -->
+		<property name="safPolicy">
+			<bean class="eventcenter.remote.saf.simple.SimpleStoreAndForwardPolicy">
+				<property name="storeOnSendFail" value="true"></property>
+				<property name="checkInterval" value="10000"></property>
+			</bean>
+		</property>
+	</bean>
+
+    <!-- 由于使用了dubbo.properties混合的方式配置，所以需要加入这个配置 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesMode">  
+            <value>1</value>  
+        </property>  
+        <property name="searchSystemEnvironment">  
+            <value>true</value>  
+        </property>  
+    </bean>
+
+    <bean id="ecConfig" class="eventcenter.api.EventCenterConfig">
+        <property name="openLoggerMdc" value="true"></property>
+        <property name="loggerMdcField" value="clueId"></property>
+		<property name="queueEventContainerFactory">
+			<bean class="eventcenter.leveldb.LevelDBContainerFactory">
+				<property name="corePoolSize" value="20"></property>
+				<property name="maximumPoolSize" value="300"></property>
+				<property name="path" value="./target/monitor/pub"></property>
+			</bean>
+		</property>
+    </bean>
+
+	<!-- 初始化客户端的监控模块 -->
+	<bean id="ecMonitor" class="eventcenter.monitor.client.DefaultControlMonitor">
+		<property name="dirPath" value="./target/monitor/pub"></property>
+		<property name="group" value="test"></property>
+		<property name="nodeName" value="pub_test"></property>
+		<property name="infoForward" ref="infoForward"></property>
+		<property name="heartbeatInterval" value="1000"></property>
+	</bean>
+
+	<dubbo:reference interface="eventcenter.monitor.InfoForward" id="infoForward" version="monitor_0.0.1" check="false"></dubbo:reference>
+</beans>

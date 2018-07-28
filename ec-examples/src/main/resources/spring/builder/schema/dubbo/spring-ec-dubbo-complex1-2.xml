@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 这个配置主要演示了，配置中不仅包含了publish而且还包含了subscriber -->
+
+	<!-- 这个示例演示了，spring的配置中，可以不需要显示的声明dubbo:application和dubbo:registry的节点配置dubbo，可以在conf的dubbo节点中设置这些信息即可 -->
+    <bean class="eventcenter.builder.ExampleService"></bean>
+	<context:component-scan base-package="eventcenter.builder.listeners"></context:component-scan>
+	<context:component-scan base-package="eventcenter.api"></context:component-scan>
+
+	<!-- 设置这个主要是开启 事件中心的注解方式的事件 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- 设置dubbo的application信息 -->
+	<dubbo:application name="builder-test2" owner="jackyLiu"></dubbo:application>
+	<dubbo:registry address="localhost:2181" protocol="zookeeper" ></dubbo:registry>
+	<dubbo:protocol name="dubbo" host="127.0.0.1" port="8012"></dubbo:protocol>
+
+	<!-- 这个是配置了dubbo的publisher，通过静态的方式，直接在publisher中加入远程端的subscriber坐标 -->
+	<!-- 这里只需要在conf的group中设置，如果针对不同的publish设置不同的group，需要在dubboPublish中进行配置 -->
+	<conf group="test2" xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<!-- 事件发布端，dubbo的基本配置已移至dubbo:application和dubbo:registry中-->
+		<dubbo>
+			<!-- localEventNames表示发送到远程的事件是否需要在本地消费，如果本地已经存在响应的事件监听器，*表示所有的事件都会经过本地消费 -->
+			<!-- subscriberAutowired需要设置为true，他需要动态的监听dubbo的EventSubscriber服务的开启和关闭事件，以便维护自身的关联表 -->
+			<dubboPublish localEventNames="*" expiryOffline="600" subscriberAutowired="true">
+				<!-- 开启了subscriberAutowired，则不需要配置dubboPublishGroup，如果需要针对其他不同环境下的事件做发送，则可以在这里继续定义 -->
+			</dubboPublish>
+			<!-- 这里配置的是订阅器主动订阅发布端的事件，所以一定需要配置上eventNames -->
+			<dubboSubscribe eventNames="example.manual" version="subscriber-test2"></dubboSubscribe>
+		</dubbo>
+	</conf>
+</beans>

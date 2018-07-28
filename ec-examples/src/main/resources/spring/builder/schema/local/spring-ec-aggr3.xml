@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+    <bean class="eventcenter.aggr.ExampleService"></bean>
+	<context:component-scan base-package="eventcenter.aggr.listeners"></context:component-scan>
+
+	<!-- 这个是最基础的配置，默认初始化DefaultEventCenter实例 -->
+	<conf xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<!-- 这个示例演示了，如何配置并发聚合容器，默认在aggregator的属性上配置的corePoolSize和maximumPoolSize针对的是所有并发聚合事件 -->
+		<aggregator corePoolSize="2" maximumPoolSize="10">
+			<multi>
+				<!-- 在multi中设置threadPoolInfo将会对指定的事件单独分配并发聚合容器 -->
+				<threadPoolInfo eventNames="students.query" corePoolSize="2" maximumPoolSize="10"></threadPoolInfo>
+			</multi>
+		</aggregator>
+	</conf>
+</beans>

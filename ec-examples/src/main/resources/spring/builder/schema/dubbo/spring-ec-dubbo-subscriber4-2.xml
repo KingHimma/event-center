@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- 这个示例演示了，spring的配置中，可以不需要显示的声明dubbo:application和dubbo:registry的节点配置dubbo，可以在conf的dubbo节点中设置这些信息即可 -->
+    <bean class="eventcenter.builder.ExampleService"></bean>
+	<context:component-scan base-package="eventcenter.builder.listeners"></context:component-scan>
+
+	<!-- 这个是配置了dubbo的subscriber，通过静态的方式，直接建立subscriber的EventTransmission接口的service-->
+	<!-- 这里只需要在conf的group中设置，如果针对不同的publish设置不同的group，需要在dubboPublish中进行配置 -->
+	<conf group="test2" xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<!-- 作为消费者，需要设置dubbo的基本信息，application开头的为之前dubbo:application的配置，registry开头的为之前dubbo:registry的配置，protocol开头的为之前dubbo:protocol的配置 -->
+		<dubbo applicationName="builder-test" applicationOwner="jackyLiu" registryAddress="localhost:2181" registryProtocol="zookeeper" protocolHost="127.0.0.1" protocolPort="21883">
+			<!-- 如果是publish端直接引用subscriber的EventTransmission，则不需要设置eventNames属性 -->
+			<dubboSubscribe version="subscriber-test2"></dubboSubscribe>
+		</dubbo>
+	</conf>
+</beans>

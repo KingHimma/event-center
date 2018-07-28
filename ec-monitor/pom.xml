@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ec</artifactId>
+        <groupId>eventcenter</groupId>
+        <version>1.6-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <version.jest>0.1.7</version.jest>
+        <version.elasticsearch>1.1.1</version.elasticsearch>
+        <version.mysql>5.1.24</version.mysql>
+    </properties>
+
+    <artifactId>ec-monitor</artifactId>
+    <name>EC Monitor</name>
+    <packaging>pom</packaging>
+    <description>事件监控模块，这里会分为两个模块，一个是客户端模块，提供监控的数据和客户端的心跳，另一个是服务端的模块，收集心跳和节点的数据以及提供监控服务</description>
+    <modules>
+        <module>ec-monitor-client</module>
+        <module>ec-monitor-core</module>
+        <module>ec-monitor-server</module>
+        <module>ec-monitor-console</module>
+        <module>ec-monitor-elasticsearch</module>
+        <module>ec-monitor-mysql</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>3.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.searchbox</groupId>
+                <artifactId>jest</artifactId>
+                <version>${version.jest}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${version.elasticsearch}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${version.mysql}</version>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+</project>
