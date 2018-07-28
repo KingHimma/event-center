@@ -1,5 +1,6 @@
 package eventcenter.leveldb;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventSourceBase;
 import eventcenter.api.utils.SerializeUtils;
 import eventcenter.leveldb.utils.LevelDbUtils;
@@ -143,8 +144,9 @@ public class QueueMiddleComponent {
 			}
 		}
 		
-		if(!allClosed)
+		if(!allClosed) {
 			return ;
+		}
 		adapter.close();
 	}
 	
@@ -257,14 +259,15 @@ public class QueueMiddleComponent {
 	}
 	
 	protected Long calculateTotalCount(){
-		if(null == writeCursor || readCursor == null)
+		if(null == writeCursor || readCursor == null) {
 			return 0L;
+		}
 		final long gapPageNum = writeCursor.getPageNo() - readCursor.getPageNo();
 		final long leftPageSize = writeCursor.getIndex() - readCursor.getIndex();
 		return gapPageNum*pageSize + leftPageSize;
 	}
 	
-	public String save(EventSourceBase evt) throws PersistenceException {
+	public String save(CommonEventSource evt) throws PersistenceException {
 		final ReentrantLock writeLock = this.writeLock;
 		writeLock.lock();
 		WriteBatch wb = adapter.getDb().createWriteBatch();
@@ -288,7 +291,6 @@ public class QueueMiddleComponent {
 			if(isCursorToTheEndPage(writeCursor)){
 				newPage(wrapper.getTxnId(), wb);
 			}else{
-				//long writeIndex = writeCursor.getIndex();
 				currentPage.getIndexes().add(wrapper.getTxnId());
 				writeCursor.setIndex(currentPage.getIndexes().size());
 				put(KEY_WRITE_CURSOR, writeCursor, wb);
@@ -322,8 +324,9 @@ public class QueueMiddleComponent {
 	public EventSourceWrapper pop() throws PersistenceException{
 		final ReentrantLock readLock = this.readLock;
 		readLock.lock();
-		if(null == adapter.db)
+		if(null == adapter.db) {
 			return null;
+		}
 		WriteBatch wb = adapter.db.createWriteBatch();
 		try{
 			return pop(wb);
@@ -343,8 +346,9 @@ public class QueueMiddleComponent {
 		readLock.lock();
 		try{
 			List<EventSourceWrapper> list = pop(1, wb);
-			if(list == null || list.size() == 0)
+			if(list == null || list.size() == 0) {
 				return null;
+			}
 			return list.get(0);
 		}finally{
 			readLock.unlock();
@@ -354,8 +358,9 @@ public class QueueMiddleComponent {
 	public List<EventSourceWrapper> pop(int bulkSize) throws PersistenceException {
 		final ReentrantLock readLock = this.readLock;
 		readLock.lock();
-		if(null == adapter.db)
+		if(null == adapter.db) {
 			return new ArrayList<EventSourceWrapper>();
+		}
 		WriteBatch wb = adapter.db.createWriteBatch();
 		try{
 			return pop(bulkSize, wb);
@@ -382,8 +387,9 @@ public class QueueMiddleComponent {
 		try{
 			long index = readCursor.getIndex();
 			List<EventSourceWrapper> list = _peek(bulkSize);
-			if(list == null || list.size() == 0)
+			if(list == null || list.size() == 0) {
 				return list;
+			}
 			long nextIndex = list.size() + index;
 			long nextPageNo = calculateNextReadPage(list.size(), nextIndex);
 			if(nextPageNo != readCursor.getPageNo()){
@@ -403,11 +409,12 @@ public class QueueMiddleComponent {
 	}
 
 	String logEventSourceBase(List<EventSourceWrapper> sources){
-		if(null == sources || sources.size() == 0)
+		if(null == sources || sources.size() == 0) {
 			return "";
+		}
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
-		for(EventSourceBase source : sources){
+		for(CommonEventSource source : sources){
 			if(index > 0){
 				sb.append(",");
 			}
@@ -422,11 +429,6 @@ public class QueueMiddleComponent {
 	}
 
 	long calculateNextReadPage(int popSize, long nextIndex) throws PersistenceException{
-		/*if(readCursor.getPageNo() < rearPageNo){
-			LevelDBPage page = getPage(readCursor.getPageNo());
-			long ps = page.getIndexes()==null?pageSize:page.getIndexes().size();
-			return (nextIndex/ps) + readCursor.getPageNo();
-		}*/
 		long increametal = nextIndex/pageSize;
 		if(readCursor.getPageNo() == Long.MAX_VALUE && increametal > 0){
 			return increametal - 1;
@@ -444,8 +446,9 @@ public class QueueMiddleComponent {
 		readLock.lock();
 		try{
 			List<EventSourceWrapper> list = _peek(1);
-			if(list == null || list.size() == 0)
+			if(list == null || list.size() == 0) {
 				return null;
+			}
 			return list.get(0);
 		}finally{
 			readLock.unlock();
@@ -486,15 +489,18 @@ public class QueueMiddleComponent {
 	
 	void loadTxnIds(final List<String> txnIds, int startIndex, long pageNo, int total) throws PersistenceException{
 		LevelDBPage page = getPage(pageNo);
-		if(null == page || page.getIndexes() == null || page.getIndexes().size() == 0)
+		if(null == page || page.getIndexes() == null || page.getIndexes().size() == 0) {
 			return ;
+		}
 		for(int i = (int)startIndex;i < page.getIndexes().size();i++){
 			txnIds.add(page.getIndexes().get(i));
-			if(txnIds.size() == total)
+			if(txnIds.size() == total) {
 				return ;
+			}
 		}
-		if(page.getNo() == currentPage.getNo())
+		if(page.getNo() == currentPage.getNo()) {
 			return ;
+		}
 		long nextPageNo = page.getNo()==Long.MAX_VALUE?0:(page.getNo() + 1);
 		loadTxnIds(txnIds, 0, nextPageNo, total);
 	}
@@ -574,8 +580,9 @@ public class QueueMiddleComponent {
 				for(int i = (int)pageNo;i < readPageNo;i++){
 					LevelDBPage page = getPage(i);
 					List<String> indexes = page.getIndexes();
-					if(indexes == null || indexes.size() == 0)
+					if(indexes == null || indexes.size() == 0) {
 						continue;
+					}
 					batchDelete(i, indexes.size(), indexes.toArray(new String[indexes.size()]));
 					if(logger.isTraceEnabled()) {
 						logger.trace(String.format("delete data page:%s, from:%s, to:%s", readPageNo, 0, readIndex));
@@ -633,8 +640,9 @@ public class QueueMiddleComponent {
 	}
 	
 	protected void batchDelete(long pageNo, int index, String... keys) throws PersistenceException{
-		if(keys == null || keys.length == 0 || adapter.getDb() == null)
+		if(keys == null || keys.length == 0 || adapter.getDb() == null) {
 			return ;
+		}
 		WriteBatch writeBatch = adapter.getDb().createWriteBatch();
 		try{
 			// 未开启事务时，才能删除存储的事件数据，如果开启事务后，将由TxnQueueComponent中的houseKeeping处理

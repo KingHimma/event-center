@@ -1,8 +1,8 @@
 package eventcenter.leveldb.tx;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventCenterConfig;
 import eventcenter.api.EventInfo;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.EventListener;
 import eventcenter.api.support.DefaultEventCenter;
 import eventcenter.leveldb.LevelDBContainer;
@@ -126,7 +126,7 @@ public class TestLevelDBContainerWithTx {
     class TestListener implements EventListener {
 
         @Override
-        public void onObserved(EventSourceBase source) {
+        public void onObserved(CommonEventSource source) {
             eventIds.add(source.getEventId());
         }
 
@@ -135,7 +135,7 @@ public class TestLevelDBContainerWithTx {
     class TestListener2 implements EventListener {
 
         @Override
-        public void onObserved(EventSourceBase source) {
+        public void onObserved(CommonEventSource source) {
             try {
                 Thread.sleep(listenerSleepTime);
                 System.out.println("当前执行的事件数:" + counter.incrementAndGet());

@@ -14,7 +14,7 @@ public interface ListenerFilter {
      * @param evt
      * @return 如果拦截器执行处理正常，应该返回true，如果返回false，那么事件和后置拦截器都不会执行
      */
-    boolean before(EventListener listener, EventSourceBase evt);
+    boolean before(EventListener listener, CommonEventSource evt);
 
     /**
      * execute filter after listener invoked

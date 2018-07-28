@@ -1,12 +1,14 @@
 package eventcenter.remote.publisher;
 
 import eventcenter.api.EventInfo;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Ignore
 public class TestLocalPublisherGroup {
 
 	@SuppressWarnings("unchecked")

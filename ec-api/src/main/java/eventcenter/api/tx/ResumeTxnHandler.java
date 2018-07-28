@@ -1,6 +1,6 @@
 package eventcenter.api.tx;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 
 /**
  * resume uncommitted transaction handler, it would call back by {@link TransactionalSupport#resumeTxn(ResumeTxnHandler)}
@@ -10,5 +10,5 @@ import eventcenter.api.EventSourceBase;
  */
 public interface ResumeTxnHandler {
 
-    void resume(EventTxnStatus status, EventSourceBase event);
+    void resume(EventTxnStatus status, CommonEventSource event);
 }

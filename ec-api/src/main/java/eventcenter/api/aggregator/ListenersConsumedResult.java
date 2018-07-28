@@ -1,11 +1,11 @@
 package eventcenter.api.aggregator;
 
+import eventcenter.api.CommonEventSource;
+import eventcenter.api.EventSourceBase;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.EventSourceBase;
 
 /**
  * 监听器消费后返回的结果集
@@ -37,7 +37,7 @@ public class ListenersConsumedResult implements Serializable {
 	/**
 	 * 事件源
 	 */
-	private EventSourceBase source;
+	private CommonEventSource source;
 
 	public String getEventName() {
 		return eventName;
@@ -69,7 +69,7 @@ public class ListenersConsumedResult implements Serializable {
 		return source;
 	}
 
-	public void setSource(EventSourceBase source) {
+	public void setSource(CommonEventSource source) {
 		this.source = source;
 		this.eventName = source.getEventName();
 	}

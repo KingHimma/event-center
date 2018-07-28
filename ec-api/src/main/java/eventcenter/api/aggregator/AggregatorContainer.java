@@ -1,6 +1,6 @@
 package eventcenter.api.aggregator;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface AggregatorContainer {
 	 * @param listeners
 	 * @return
 	 */
-	ListenersConsumedResult executeListeners(List<AggregatorEventListener> listeners, EventSourceBase source, ListenerExceptionHandler handler) throws InterruptedException;
+	ListenersConsumedResult executeListeners(List<AggregatorEventListener> listeners, CommonEventSource source, ListenerExceptionHandler handler) throws InterruptedException;
 	
 	/**
 	 * 并发运行一个监听器的多个事件源，参数sources必须是继承于AggregatorEventSource
@@ -26,5 +26,5 @@ public interface AggregatorContainer {
 	 * @return
 	 * @throws InterruptedException
 	 */
-	ListenersConsumedResult executeListenerSources(AggregatorEventListener listener, List<EventSourceBase> sources, ListenerExceptionHandler handler) throws InterruptedException;
+	ListenersConsumedResult executeListenerSources(AggregatorEventListener listener, List<CommonEventSource> sources, ListenerExceptionHandler handler) throws InterruptedException;
 }

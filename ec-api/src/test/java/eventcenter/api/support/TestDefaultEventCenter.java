@@ -1,21 +1,17 @@
 package eventcenter.api.support;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import eventcenter.api.*;
-import eventcenter.api.EventInfo;
-import eventcenter.api.EventListener;
+import eventcenter.api.annotation.ListenerBind;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import eventcenter.api.EventListener;
-import eventcenter.api.annotation.ListenerBind;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TestDefaultEventCenter {
 
@@ -80,8 +76,8 @@ public class TestDefaultEventCenter {
 	public void testWithEventTest1() throws InterruptedException {
 		Assert.assertEquals(110, eventCenter.fireEvent(this, new EventInfo("test1").setArgs(new Object[]{1,2,3}), 110));
 		Thread.sleep(100);
-		Mockito.verify(listener1, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
-		Mockito.verify(listener2, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
+		Mockito.verify(listener1, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
+		Mockito.verify(listener2, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
 		
 		Assert.assertEquals(1, listenerRef.listener1.intValue());
 		Assert.assertEquals(110, listenerRef.listener1Result.intValue());
@@ -92,7 +88,7 @@ public class TestDefaultEventCenter {
 	public void testWithEventTest2() throws InterruptedException{
 		Assert.assertEquals(110, eventCenter.fireEvent(this, new EventInfo("test2").setArgs(new Object[]{1,2,3}), 110));
 		Thread.sleep(100);
-		Mockito.verify(listener3, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
+		Mockito.verify(listener3, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
 		
 		Assert.assertNull(listenerRef.listener3);
 		Thread.sleep(listener2Sleep);
@@ -113,8 +109,8 @@ public class TestDefaultEventCenter {
 	class Listener1 implements EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
-			CommonEventSource evt = (CommonEventSource)source;
+		public void onObserved(CommonEventSource source) {
+			CommonEventSource evt = source;
 			listenerRef.listener1 = evt.getArg(0, Integer.class);
 			listenerRef.listener1Result = (Integer)evt.getResult();
 		}
@@ -125,8 +121,8 @@ public class TestDefaultEventCenter {
 	class Listener2 implements EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
-			CommonEventSource evt = (CommonEventSource)source;
+		public void onObserved(CommonEventSource source) {
+			CommonEventSource evt = source;
 			listenerRef.listener2 = evt.getArg(0, Integer.class);
 		}
 		
@@ -136,8 +132,8 @@ public class TestDefaultEventCenter {
 	class Listener3 implements EventListener {
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
-			CommonEventSource evt = (CommonEventSource)source;
+		public void onObserved(CommonEventSource source) {
+			CommonEventSource evt = source;
 			
 			try{
 				Thread.sleep(listener2Sleep);
@@ -153,8 +149,8 @@ public class TestDefaultEventCenter {
 	class Listener4 implements EventListener {
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
-			CommonEventSource evt = (CommonEventSource)source;
+		public void onObserved(CommonEventSource source) {
+			CommonEventSource evt = source;
 			
 			try{
 				Thread.sleep(listener2Sleep);
@@ -170,8 +166,8 @@ public class TestDefaultEventCenter {
 	class Listener5 implements EventListener {
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
-			CommonEventSource evt = (CommonEventSource)source;
+		public void onObserved(CommonEventSource source) {
+			CommonEventSource evt = source;
 			
 			try{
 				Thread.sleep(listener2Sleep);
@@ -187,8 +183,8 @@ public class TestDefaultEventCenter {
 	class Listener6 implements EventListener {
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
-			CommonEventSource evt = (CommonEventSource)source;
+		public void onObserved(CommonEventSource source) {
+			CommonEventSource evt = source;
 			
 			try{
 				Thread.sleep(listener2Sleep);

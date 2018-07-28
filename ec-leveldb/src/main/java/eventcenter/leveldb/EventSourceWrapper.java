@@ -1,15 +1,15 @@
 package eventcenter.leveldb;
 
-import java.io.Serializable;
+import eventcenter.api.CommonEventSource;
 
-import eventcenter.api.EventSourceBase;
+import java.io.Serializable;
 
 /**
  * it wrapper EventSourceBase and a txn id
  * @author JackyLIU
  *
  */
-public class EventSourceWrapper extends EventSourceBase implements Serializable {
+public class EventSourceWrapper extends CommonEventSource implements Serializable {
 
 	/**
 	 * 
@@ -18,19 +18,12 @@ public class EventSourceWrapper extends EventSourceBase implements Serializable 
 
 	private final String txnId;
 	
-	private final EventSourceBase evt;
-	
-	public EventSourceWrapper(String txnId, EventSourceBase evt){
-		super(evt.getSource(), evt.getEventId(), evt.getEventName(), evt.getMdcValue());
+	public EventSourceWrapper(String txnId, CommonEventSource evt){
+		super(evt.getSource(), evt.getEventId(), evt.getEventName(), evt.getArgs(), evt.getResult(), evt.getMdcValue());
 		this.txnId = txnId;
-		this.evt = evt;
 	}
 
 	public String getTxnId() {
 		return txnId;
-	}
-
-	public EventSourceBase getEvt() {
-		return evt;
 	}
 }

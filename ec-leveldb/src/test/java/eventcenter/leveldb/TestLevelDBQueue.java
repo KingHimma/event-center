@@ -78,7 +78,7 @@ public class TestLevelDBQueue {
 			public void run() {
 				int index = 0;
 				while(index < count){
-					EventSourceBase evt = queue.transfer();
+					CommonEventSource evt = queue.transfer();
 					received.add(evt.getEventId());
 					System.out.println("received:" + evt.getEventId());
 					index++;
@@ -200,7 +200,7 @@ public class TestLevelDBQueue {
 	
 	class Test3Task implements Runnable{
 
-		private EventSourceBase evt;
+		private CommonEventSource evt;
 		
 		private final List<String> uuids;
 		
@@ -222,7 +222,7 @@ public class TestLevelDBQueue {
 	
 	class Test4Task implements Runnable{
 
-		private EventSourceBase evt;
+		private CommonEventSource evt;
 		
 		private final List<String> uuids;
 		

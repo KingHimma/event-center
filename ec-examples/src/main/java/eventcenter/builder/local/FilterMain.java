@@ -16,7 +16,7 @@ public class FilterMain {
                 .addEventListeners(InitBuilder.buildEventListeners())
                 .addGlobleFilter(new ListenerFilter() {
                     @Override
-                    public boolean before(EventListener listener, EventSourceBase evt) {
+                    public boolean before(EventListener listener, CommonEventSource evt) {
                         System.out.println("我是全局过滤前置器:" + evt.getSource()==null?"":evt.getSource().getClass());
                         return true;
                     }
@@ -28,7 +28,7 @@ public class FilterMain {
                 })
                 .addListenerFilter("example.manual", new ListenerFilter() {
                     @Override
-                    public boolean before(EventListener listener, EventSourceBase evt) {
+                    public boolean before(EventListener listener, CommonEventSource evt) {
                         System.out.println("我是单个过滤前置器:" + evt.getSource()==null?"":evt.getSource().getClass());
                         return true;
                     }

@@ -95,7 +95,7 @@ public class TestEventSubscriber {
     class SampleEventListener implements EventListener {
 
         @Override
-        public void onObserved(EventSourceBase source) {
+        public void onObserved(CommonEventSource source) {
             consumedEvent.set(true);
         }
     }

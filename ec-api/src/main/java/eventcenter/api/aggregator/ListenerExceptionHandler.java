@@ -1,9 +1,7 @@
 package eventcenter.api.aggregator;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 
 /**
  * 聚合运行时，监听器异常处理回调
@@ -19,5 +17,5 @@ public interface ListenerExceptionHandler {
 	 * @param e
 	 * @return
 	 */
-	Object handle(EventListener listener, EventSourceBase source, Exception e);
+	Object handle(EventListener listener, CommonEventSource source, Exception e);
 }

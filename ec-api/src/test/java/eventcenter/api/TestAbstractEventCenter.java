@@ -57,7 +57,7 @@ public class TestAbstractEventCenter {
 		register.setEventListeners(new EventListener[]{new EventListener(){
 
 			@Override
-			public void onObserved(EventSourceBase source) {
+			public void onObserved(CommonEventSource source) {
 				
 			}
 			

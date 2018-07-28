@@ -1,11 +1,10 @@
 package eventcenter.remote.dubbo.test;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import org.springframework.stereotype.Component;
-
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.annotation.ExecuteAsyncable;
 import eventcenter.api.annotation.ListenerBind;
+import org.springframework.stereotype.Component;
 
 
 @Component
@@ -14,7 +13,7 @@ import eventcenter.api.annotation.ListenerBind;
 public class AsycnablePrintListener implements EventListener {
 
 	@Override
-	public void onObserved(EventSourceBase source) {
+	public void onObserved(CommonEventSource source) {
 		System.out.println("触发事件了：" + source);
 	}
 

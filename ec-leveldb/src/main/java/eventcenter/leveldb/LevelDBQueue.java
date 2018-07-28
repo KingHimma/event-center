@@ -1,6 +1,6 @@
 package eventcenter.leveldb;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
 import eventcenter.api.async.EventQueue;
 import eventcenter.api.async.MessageListener;
@@ -70,8 +70,9 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 	}
 
 	private void openTxnQueueComponent(){
-		if(!isOpenTxnMode())
+		if(!isOpenTxnMode()) {
 			return ;
+		}
 		txnQueueComponent = TxnQueueComponentFactory.create(adapter.getQueueName(), adapter.getDB(), transactionConfig, txnCapacity);
 		try {
 			txnQueueComponent.open();
@@ -95,7 +96,7 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 	}
 
 	@Override
-	public void offer(EventSourceBase evt) throws QueueException {
+	public void offer(CommonEventSource evt) throws QueueException {
 		try {
 			adapter.save(evt);
 			unlock();
@@ -105,44 +106,48 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 	}
 
 	@Override
-	public void offer(EventSourceBase evt, long timeout) {
+	public void offer(CommonEventSource evt, long timeout) {
 		offer(evt);
 	}
 
 	@Override
-	public EventSourceBase transfer() {
+	public CommonEventSource transfer() {
 		return transfer(-1L);
 	}
 
 	@Override
-	public EventSourceBase transfer(long timeout) {
+	public CommonEventSource transfer(long timeout) {
 		if(!isOpen){
 			return null;
 		}
 		
-		EventSourceBase evt = pop();
-		if(evt != null)
+		CommonEventSource evt = pop();
+		if(evt != null) {
 			return evt;
+		}
 
 		lock(timeout);
-		if(timeout <= 0)
+		if(timeout <= 0) {
 			return transfer(timeout);
+		}
 
 		return pop();
 	}
 
-	EventSourceBase transfer(long timeout, WriteBatch wb){
+	CommonEventSource transfer(long timeout, WriteBatch wb){
 		if(!isOpen){
 			return null;
 		}
 
-		EventSourceBase evt = pop(wb);
-		if(evt != null)
+		CommonEventSource evt = pop(wb);
+		if(evt != null) {
 			return evt;
+		}
 
 		lock(timeout);
-		if(timeout <= 0)
+		if(timeout <= 0) {
 			return transfer(timeout, wb);
+		}
 
 		return pop(wb);
 	}
@@ -169,15 +174,18 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 		}
 	}
 
-	private EventSourceBase pop(){
-		if(!isOpen)
+	private CommonEventSource pop(){
+		if(!isOpen) {
 			return null;
+		}
 		try {
 			EventSourceWrapper eventWrapper = adapter.pop();
-			if(null == eventWrapper)
+			if(null == eventWrapper) {
 				return null;
-			if(!isOpenTxnMode())
-				return eventWrapper.getEvt();
+			}
+			if(!isOpenTxnMode()) {
+				return eventWrapper;
+			}
 			return eventWrapper;
 		} catch (Throwable e) {
 			logger.error("pop message error", e);
@@ -185,15 +193,18 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 		}
 	}
 
-	private EventSourceBase pop(WriteBatch wb){
-		if(!isOpen)
+	private CommonEventSource pop(WriteBatch wb){
+		if(!isOpen) {
 			return null;
+		}
 		try {
 			EventSourceWrapper eventWrapper = adapter.pop(wb);
-			if(null == eventWrapper)
+			if(null == eventWrapper) {
 				return null;
-			if(!isOpenTxnMode())
-				return eventWrapper.getEvt();
+			}
+			if(!isOpenTxnMode()) {
+				return eventWrapper;
+			}
 			return eventWrapper;
 		} catch (Throwable e) {
 			logger.error("pop message error", e);
@@ -222,22 +233,25 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 	}
 
 	@Override
-	public EventTxnStatus getTxnStatus(EventSourceBase event, String txnId, EventListener listener) throws Exception {
-		if(!isOpenTxnMode())
+	public EventTxnStatus getTxnStatus(CommonEventSource event, String txnId, EventListener listener) throws Exception {
+		if(!isOpenTxnMode()) {
 			throw new UnopenTxnModeException();
+		}
 		return getTxnQueueComponent().getTxnStatus(event.getEventId(), listener.getClass(), txnId);
 	}
 
-	public EventTxnStatus getTxnStatus(EventSourceBase event, String txnId, EventListener listener, WriteBatch writeBatch) throws Exception {
-		if(!isOpenTxnMode())
+	public EventTxnStatus getTxnStatus(CommonEventSource event, String txnId, EventListener listener, WriteBatch writeBatch) throws Exception {
+		if(!isOpenTxnMode()) {
 			throw new UnopenTxnModeException();
+		}
 		return getTxnQueueComponent().getTxnStatus(event.getEventId(), listener.getClass(), txnId, writeBatch);
 	}
 
 	@Override
 	public void commit(EventTxnStatus txnStatus) throws Exception {
-		if(!isOpenTxnMode())
+		if(!isOpenTxnMode()) {
 			throw new UnopenTxnModeException();
+		}
 
 		getTxnQueueComponent().commit(txnStatus);
 	}

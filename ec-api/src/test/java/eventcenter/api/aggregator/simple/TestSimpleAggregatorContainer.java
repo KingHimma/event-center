@@ -2,7 +2,6 @@ package eventcenter.api.aggregator.simple;
 
 import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.aggregator.*;
 import eventcenter.api.annotation.ListenerBind;
 import org.junit.After;
@@ -54,7 +53,7 @@ public class TestSimpleAggregatorContainer {
 		ListenersConsumedResult results = container.executeListeners(Arrays.asList(listener1, listener2), source, new ListenerExceptionHandler(){
 			@Override
 			public Object handle(EventListener listener,
-					EventSourceBase source, Exception e) {
+					CommonEventSource source, Exception e) {
 				return null;
 			}
 		});
@@ -93,8 +92,8 @@ public class TestSimpleAggregatorContainer {
 		}
 		System.out.println("结束批量调用，所花时间：" + (System.currentTimeMillis() - start) + " ms.");
 		
-		Mockito.verify(listener1, Mockito.atLeast(count)).onObserved(Mockito.any(EventSourceBase.class));
-		Mockito.verify(listener2, Mockito.atLeast(count)).onObserved(Mockito.any(EventSourceBase.class));
+		Mockito.verify(listener1, Mockito.atLeast(count)).onObserved(Mockito.any(CommonEventSource.class));
+		Mockito.verify(listener2, Mockito.atLeast(count)).onObserved(Mockito.any(CommonEventSource.class));
 		
 		Assert.assertEquals(count, results.size());
 		Integer prevNum = null;
@@ -116,14 +115,14 @@ public class TestSimpleAggregatorContainer {
 	 */
 	@Test
 	public void testWithSplit() throws InterruptedException{
-		EventSourceBase source1 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 1}, null, null));
-		EventSourceBase source2 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 2}, null, null));
-		EventSourceBase source3 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 3}, null, null));
+		CommonEventSource source1 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 1}, null, null));
+		CommonEventSource source2 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 2}, null, null));
+		CommonEventSource source3 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 3}, null, null));
 		
 		ListenersConsumedResult results = container.executeListenerSources(listener3, Arrays.asList(source1, source2, source3), new ListenerExceptionHandler(){
 			@Override
 			public Object handle(EventListener listener,
-					EventSourceBase source, Exception e) {
+					CommonEventSource source, Exception e) {
 				return null;
 			}
 		});
@@ -135,14 +134,14 @@ public class TestSimpleAggregatorContainer {
 			total += num;
 		}
 		Assert.assertEquals(6, total);
-		Mockito.verify(listener3, Mockito.atLeast(3)).onObserved(Mockito.any(EventSourceBase.class));
+		Mockito.verify(listener3, Mockito.atLeast(3)).onObserved(Mockito.any(CommonEventSource.class));
 	}
 	
 	@ListenerBind("test1")
 	class AggregatorListener1 implements AggregatorEventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			
 			// 将执行的结果放入到结果中
@@ -155,7 +154,7 @@ public class TestSimpleAggregatorContainer {
 	class AggregatorListener2 implements AggregatorEventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			evt.putResult(this, evt.getArg(1, String.class));
 		}
@@ -166,7 +165,7 @@ public class TestSimpleAggregatorContainer {
 	class AggregatorListener3 implements AggregatorEventListener {
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			evt.putResult(this, evt.getArg(2, Integer.class));
 		}
@@ -175,9 +174,9 @@ public class TestSimpleAggregatorContainer {
 	
 	class Task implements Callable<ListenersConsumedResult>{
 
-		private final EventSourceBase source;
+		private final CommonEventSource source;
 		
-		public Task(EventSourceBase source){
+		public Task(CommonEventSource source){
 			this.source = source;
 		}
 		
@@ -186,7 +185,7 @@ public class TestSimpleAggregatorContainer {
 			return container.executeListeners(Arrays.asList(listener1, listener2), source, new ListenerExceptionHandler(){
 				@Override
 				public Object handle(EventListener listener,
-						EventSourceBase source, Exception e) {
+						CommonEventSource source, Exception e) {
 					return null;
 				}
 			});

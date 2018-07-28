@@ -13,7 +13,7 @@ public interface EventRegister {
 	 * @param result
 	 * @return
 	 */
-	EventSourceBase createEventSource(Object source, String id, String eventName, Object[] args, Object result, String mdcValue);
+	CommonEventSource createEventSource(Object source, String id, String eventName, Object[] args, Object result, String mdcValue);
 	
 	/**
 	 * 创建事件监听器

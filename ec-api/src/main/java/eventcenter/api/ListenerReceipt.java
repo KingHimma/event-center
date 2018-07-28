@@ -39,7 +39,7 @@ public class ListenerReceipt implements Serializable {
     /**
      * executed event source
      */
-    private EventSourceBase evt;
+    private CommonEventSource evt;
 
     /**
      * if listener executed success, it would calculate which listener consumed event time.
@@ -117,7 +117,7 @@ public class ListenerReceipt implements Serializable {
      * executed event source
      * @param evt
      */
-    public void setEvt(EventSourceBase evt) {
+    public void setEvt(CommonEventSource evt) {
         this.evt = evt;
     }
 
@@ -129,7 +129,7 @@ public class ListenerReceipt implements Serializable {
         this.start = start;
     }
 
-    public static ListenerReceipt buildSuc(EventListener listener, EventSourceBase evt, Long start, Long took){
+    public static ListenerReceipt buildSuc(EventListener listener, CommonEventSource evt, Long start, Long took){
         ListenerReceipt receipt = new ListenerReceipt();
         receipt.setEventListener(listener);
         receipt.setEvt(evt);
@@ -139,7 +139,7 @@ public class ListenerReceipt implements Serializable {
         return receipt;
     }
 
-    public static ListenerReceipt buildFail(EventListener listener, EventSourceBase evt, Long start, Throwable e){
+    public static ListenerReceipt buildFail(EventListener listener, CommonEventSource evt, Long start, Throwable e){
         ListenerReceipt receipt = new ListenerReceipt();
         receipt.setEventListener(listener);
         receipt.setEvt(evt);

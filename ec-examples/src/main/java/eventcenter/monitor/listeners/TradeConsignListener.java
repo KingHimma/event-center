@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 public class TradeConsignListener implements EventListener {
 
     @Override
-    public void onObserved(EventSourceBase source) {
-        CommonEventSource evt = (CommonEventSource)source;
+    public void onObserved(CommonEventSource source) {
+        CommonEventSource evt = source;
         Trade trade = evt.getArg(0, Trade.class);
         System.out.println("收到事件" + evt.getEventName() + "，tid:" + trade.getTid());
     }

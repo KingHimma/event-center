@@ -6,13 +6,15 @@ import org.apache.log4j.MDC;
 import java.util.List;
 
 /**
- * Created by liumingjian on 16/1/22.
+ *
+ * @author liumingjian
+ * @date 16/1/22
  */
 public class EventListenerTask implements Runnable {
 
     private final EventListener listener;
 
-    private final EventSourceBase evt;
+    private final CommonEventSource evt;
 
     /**
      * 是否允许抛出异常
@@ -26,11 +28,11 @@ public class EventListenerTask implements Runnable {
 
     protected final Logger logger = Logger.getLogger(this.getClass());
 
-    public EventListenerTask(EventListener listener, EventSourceBase evt){
+    public EventListenerTask(EventListener listener, CommonEventSource evt){
         this(listener, evt, false);
     }
 
-    public EventListenerTask(EventListener listener, EventSourceBase evt, Boolean allowThrowException){
+    public EventListenerTask(EventListener listener, CommonEventSource evt, Boolean allowThrowException){
         this.listener = listener;
         this.evt = evt;
         this.allowThrowException = allowThrowException;

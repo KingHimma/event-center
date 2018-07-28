@@ -7,7 +7,7 @@ package eventcenter.api;
 public class ListenerFilterAdapter implements ListenerFilter {
 
     @Override
-    public boolean before(EventListener listener, EventSourceBase evt) {
+    public boolean before(EventListener listener, CommonEventSource evt) {
         return true;
     }
 

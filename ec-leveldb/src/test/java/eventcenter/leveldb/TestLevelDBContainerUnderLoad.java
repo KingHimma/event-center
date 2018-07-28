@@ -117,7 +117,7 @@ public class TestLevelDBContainerUnderLoad {
 	class TestListener implements EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			try {
 				System.out.println("begin consuming:" + source.getEventId());
 				Thread.sleep(1000);
@@ -138,7 +138,7 @@ public class TestLevelDBContainerUnderLoad {
 		}
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			if(this.uuids.contains(source.getEventId())){
 				System.err.println("读取了重复事件：" + source.getEventId());
 				return ;

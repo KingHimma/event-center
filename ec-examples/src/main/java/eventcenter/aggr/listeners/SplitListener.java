@@ -1,6 +1,6 @@
 package eventcenter.aggr.listeners;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.aggregator.AggregatorEventListener;
 import eventcenter.api.aggregator.AggregatorEventSource;
 import eventcenter.api.annotation.ListenerBind;
@@ -19,7 +19,7 @@ import java.util.List;
 public class SplitListener implements AggregatorEventListener {
 
 	@Override
-	public void onObserved(EventSourceBase source) {
+	public void onObserved(CommonEventSource source) {
 		AggregatorEventSource evt = (AggregatorEventSource)source;
 		List<Integer> list = evt.getArgList(0, Integer.class);
 		// 给每个元素加1

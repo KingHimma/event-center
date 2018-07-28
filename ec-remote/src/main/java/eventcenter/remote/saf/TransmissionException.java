@@ -1,9 +1,9 @@
 package eventcenter.remote.saf;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 
 /**
- * 发送到服务端事件异常，此异常将会抛出出错的{@link IEventQueueElement}对象
+ * 发送到服务端事件异常
  * @author JackyLIU
  *
  */
@@ -14,14 +14,14 @@ public class TransmissionException extends Exception {
 	 */
 	private static final long serialVersionUID = 3122451712667496344L;
 
-	private final EventSourceBase evt;
+	private final CommonEventSource evt;
 	
-	public TransmissionException(Exception e, EventSourceBase evt){
+	public TransmissionException(Exception e, CommonEventSource evt){
 		super(e);
 		this.evt = evt;
 	}
 
-	public EventSourceBase getEvt() {
+	public CommonEventSource getEvt() {
 		return evt;
 	}
 }

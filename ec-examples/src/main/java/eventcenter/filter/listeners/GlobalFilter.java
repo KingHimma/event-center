@@ -1,7 +1,7 @@
 package eventcenter.filter.listeners;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.ListenerFilterAdapter;
 import eventcenter.api.ListenerReceipt;
 import eventcenter.api.annotation.EventFilterable;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class GlobalFilter extends ListenerFilterAdapter {
 
     @Override
-    public boolean before(EventListener listener, EventSourceBase evt) {
+    public boolean before(EventListener listener, CommonEventSource evt) {
         System.out.println("[GlobalFilter] before filter for " + evt.getEventName() + " event, id:" + evt.getEventId());
         return true;
     }

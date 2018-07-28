@@ -1,7 +1,7 @@
 package eventcenter.aggr.listeners;
 
 import eventcenter.aggr.Student;
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.aggregator.AggregatorEventListener;
 import eventcenter.api.aggregator.AggregatorEventSource;
 import eventcenter.api.annotation.ListenerBind;
@@ -19,7 +19,7 @@ import java.util.List;
 public class EncodeMobileListener implements AggregatorEventListener {
 
 	@Override
-	public void onObserved(EventSourceBase source) {
+	public void onObserved(CommonEventSource source) {
 		AggregatorEventSource evt = (AggregatorEventSource)source;
         @SuppressWarnings("unchecked")
 		List<Student> students = evt.getArg(1, List.class);

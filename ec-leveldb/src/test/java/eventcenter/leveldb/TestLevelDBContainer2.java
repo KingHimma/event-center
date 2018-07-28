@@ -114,7 +114,7 @@ public class TestLevelDBContainer2 {
 		}
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {

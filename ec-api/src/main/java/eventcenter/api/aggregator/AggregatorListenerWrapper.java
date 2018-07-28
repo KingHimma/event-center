@@ -1,13 +1,13 @@
 package eventcenter.api.aggregator;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 
 /**
  * 这个是为了支持IEventListener接口的调用
- * Created by liumingjian on 16/8/1.
+ *
+ * @author liumingjian
+ * @date 16/8/1
  */
 public class AggregatorListenerWrapper implements AggregatorEventListener {
 
@@ -18,7 +18,7 @@ public class AggregatorListenerWrapper implements AggregatorEventListener {
     }
 
     @Override
-    public void onObserved(EventSourceBase source) {
+    public void onObserved(CommonEventSource source) {
         this.eventListener.onObserved(source);
     }
 }

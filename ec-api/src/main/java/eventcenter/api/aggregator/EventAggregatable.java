@@ -1,9 +1,7 @@
 package eventcenter.api.aggregator;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventInfo;
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.EventInfo;
-import eventcenter.api.EventSourceBase;
 
 /**
  * 事件可聚合调用的接口，EventCenter继承此接口，那么具有事件将多个结束的监听器的返回结果，聚合到一个返回结果中，并返回出来
@@ -33,7 +31,7 @@ public interface EventAggregatable {
 	 * @param eventSource
 	 * @param handler
 	 */
-	void directFireAggregateEvent(Object target, EventSourceBase eventSource, ListenerExceptionHandler handler);
+	void directFireAggregateEvent(Object target, CommonEventSource eventSource, ListenerExceptionHandler handler);
 
 	/**
 	 * 触发事件，将事件通知给对应的事件订阅者，然后将所有的事件订阅者消费后的返回数据，进行聚合，并返回出来。

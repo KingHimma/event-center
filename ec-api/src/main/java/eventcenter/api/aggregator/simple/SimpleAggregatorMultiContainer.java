@@ -1,10 +1,9 @@
 package eventcenter.api.aggregator.simple;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.aggregator.AggregatorEventListener;
 import eventcenter.api.aggregator.ListenerExceptionHandler;
 import eventcenter.api.aggregator.ListenersConsumedResult;
-import eventcenter.api.EventSourceBase;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -57,8 +56,9 @@ public class SimpleAggregatorMultiContainer extends SimpleAggregatorContainer {
 
     @PostConstruct
     public void start(){
-        if(open)
+        if(open) {
             return ;
+        }
 
         if(null == threadPoolInfos || threadPoolInfos.size() == 0){
             logger.warn("it didn't set threadPoolInfos, all aggregator event would use default thread pool");
@@ -84,22 +84,27 @@ public class SimpleAggregatorMultiContainer extends SimpleAggregatorContainer {
     }
 
     void validateThreadPoolInfo(AggregatorThreadPoolInfo poolInfo){
-        if(poolInfo.getCorePoolSize() < 0)
+        if(poolInfo.getCorePoolSize() < 0) {
             throw new IllegalArgumentException("corePoolSize parameter must be more or equal than 0");
-        if(poolInfo.getMaximumPoolSize() <= 0)
+        }
+        if(poolInfo.getMaximumPoolSize() <= 0) {
             throw new IllegalArgumentException("maximumPoolSize parameter must be more than 0");
-        if(poolInfo.getEventNames() == null || "".equals(poolInfo.getEventNames().trim()))
+        }
+        if(poolInfo.getEventNames() == null || "".equals(poolInfo.getEventNames().trim())) {
             throw new IllegalArgumentException("eventNames parameter can't be empty");
+        }
     }
 
     ThreadPoolExecutor createExecutor(AggregatorThreadPoolInfo poolInfo){
         return createDefaultThreadPool(poolInfo.getCorePoolSize(), poolInfo.getMaximumPoolSize());
     }
 
+    @Override
     @PreDestroy
     public void close(){
-        if(!open)
+        if(!open) {
             return ;
+        }
 
         super.close();
         for(ThreadPoolExecutor executor : multiThreadPools){
@@ -109,8 +114,9 @@ public class SimpleAggregatorMultiContainer extends SimpleAggregatorContainer {
     }
 
     public List<AggregatorThreadPoolInfo> getThreadPoolInfos() {
-        if(null == threadPoolInfos)
+        if(null == threadPoolInfos) {
             threadPoolInfos = new ArrayList<AggregatorThreadPoolInfo>();
+        }
         return threadPoolInfos;
     }
 
@@ -119,23 +125,28 @@ public class SimpleAggregatorMultiContainer extends SimpleAggregatorContainer {
     }
 
     @Override
-    public ListenersConsumedResult executeListenerSources(AggregatorEventListener listener, List<EventSourceBase> sources, ListenerExceptionHandler handler) throws InterruptedException {
-        if(!open)
+    public ListenersConsumedResult executeListenerSources(AggregatorEventListener listener, List<CommonEventSource> sources, ListenerExceptionHandler handler) throws InterruptedException {
+        if(!open) {
             start();
+        }
         final String eventName = sources.get(0).getEventName();
-        if(!eventThreadPoolCache.containsKey(eventName))    // default use default thread pool
+        // default use default thread pool
+        if(!eventThreadPoolCache.containsKey(eventName)) {
             return super.executeListenerSources(listener, sources, handler);
+        }
 
         return executeListenerSources(listener, sources, handler, eventThreadPoolCache.get(eventName));
     }
 
     @Override
-    public ListenersConsumedResult executeListeners(List<AggregatorEventListener> listeners, EventSourceBase source, ListenerExceptionHandler handler) throws InterruptedException {
-        if(!open)
+    public ListenersConsumedResult executeListeners(List<AggregatorEventListener> listeners, CommonEventSource source, ListenerExceptionHandler handler) throws InterruptedException {
+        if(!open) {
             start();
+        }
         final String eventName = source.getEventName();
-        if(!eventThreadPoolCache.containsKey(eventName))
+        if(!eventThreadPoolCache.containsKey(eventName)) {
             return super.executeListeners(listeners, source, handler);
+        }
 
         return executeListeners(listeners, source, handler, eventThreadPoolCache.get(eventName));
     }

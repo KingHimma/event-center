@@ -55,7 +55,7 @@ public class TestQueueMiddleComponent {
 		writeIndex = queueMiddle.writeCursor.getIndex();
 		readIndex = queueMiddle.readCursor.getIndex();
 		EventSourceWrapper evt = queueMiddle.pop();
-		Assert.assertEquals(true, evt.getEvt() instanceof CommonEventSource);
+		Assert.assertEquals(true, evt instanceof CommonEventSource);
 		Assert.assertEquals(writeIndex, queueMiddle.writeCursor.getIndex());
 		//Assert.assertEquals(readIndex + 1, adapter.readCursor.getIndex());
 		/*LevelDBCursor rc = adapter.get(adapter.buildKey(EffecientLevelDBPersistenceAdapter.KEY_READ_CURSOR), LevelDBCursor.class);
@@ -88,7 +88,7 @@ public class TestQueueMiddleComponent {
 		readIndex = queueMiddle.readCursor.getIndex();
 		readPageNo = queueMiddle.readCursor.getPageNo();
 		EventSourceWrapper evt = queueMiddle.pop();
-		Assert.assertEquals(true, evt.getEvt() instanceof CommonEventSource);
+		Assert.assertEquals(true, evt instanceof CommonEventSource);
 		Assert.assertEquals(writeIndex, queueMiddle.writeCursor.getIndex());
 		System.out.println("当前读取游标页码：" + queueMiddle.readCursor.getPageNo() + ",index:" + queueMiddle.readCursor.getIndex());	
 		

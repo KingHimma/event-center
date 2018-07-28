@@ -1,9 +1,7 @@
 package eventcenter.api.aggregator;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 
 /**
  * 事件消费的结果集聚合器
@@ -26,5 +24,5 @@ public interface ResultAggregator<T> {
 	 * @param e
 	 * @return
 	 */
-	Object exceptionHandler(EventListener listener, EventSourceBase source, Exception e);
+	Object exceptionHandler(EventListener listener, CommonEventSource source, Exception e);
 }

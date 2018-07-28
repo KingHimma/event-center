@@ -1,12 +1,7 @@
 package eventcenter.api.async.simple;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventCenterConfig;
-import eventcenter.api.EventListener;
-import eventcenter.api.EventListenerTask;
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.async.EventQueue;
-import eventcenter.api.async.MessageListener;
-import eventcenter.api.async.QueueEventContainer;
 import eventcenter.api.EventListener;
 import eventcenter.api.EventListenerTask;
 import eventcenter.api.async.EventQueue;
@@ -66,13 +61,15 @@ public class SimpleQueueEventContainer extends QueueEventContainer {
 		return threadPool;
 	}
 	
+	@Override
 	public void startup() throws Exception{
 		queue.setMessageListener(new MessageListener(){
 			@Override
-			public void onMessage(final EventSourceBase message) {
+			public void onMessage(final CommonEventSource message) {
 				List<EventListener> listeners = findAsyncEventListeners(message);
-				if(null == listeners || listeners.size() == 0)
+				if(null == listeners || listeners.size() == 0) {
 					return ;
+				}
 
 				for(EventListener listener : listeners){
 					threadPool.submit(new EventListenerTask(listener, message));
@@ -85,6 +82,7 @@ public class SimpleQueueEventContainer extends QueueEventContainer {
 		}
 	}
 	
+	@Override
 	public void shutdown() throws Exception{
 		queue.close();
 		threadPool.shutdownNow();

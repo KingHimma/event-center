@@ -1,8 +1,7 @@
 package eventcenter.api.aggregator.simple;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.aggregator.*;
-import eventcenter.api.EventSourceBase;
 import org.apache.log4j.Logger;
 
 import javax.annotation.PreDestroy;
@@ -31,8 +30,9 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 	
 	public SimpleAggregatorContainer(ThreadPoolExecutor threadPool){
 		this.threadPool = threadPool;
-		if(this.threadPool.getThreadFactory() == null)
+		if(this.threadPool.getThreadFactory() == null) {
 			this.threadPool.setThreadFactory(new DefaultThreadFactory());
+		}
 	}
 	
 	public SimpleAggregatorContainer(){
@@ -54,11 +54,11 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 
 	@Override
 	public ListenersConsumedResult executeListeners(
-            List<AggregatorEventListener> listeners, EventSourceBase source, ListenerExceptionHandler handler) throws InterruptedException {
+			List<AggregatorEventListener> listeners, CommonEventSource source, ListenerExceptionHandler handler) throws InterruptedException {
 		return executeListeners(listeners, source, handler, threadPool);
 	}
 
-	protected ListenersConsumedResult executeListeners(List<AggregatorEventListener> listeners, EventSourceBase source, ListenerExceptionHandler handler, ThreadPoolExecutor executor) throws InterruptedException {
+	protected ListenersConsumedResult executeListeners(List<AggregatorEventListener> listeners, CommonEventSource source, ListenerExceptionHandler handler, ThreadPoolExecutor executor) throws InterruptedException {
 		long start = System.currentTimeMillis();
 		List<Future<ListenerConsumedResult>> tasks = executor.invokeAll(createListenerCallers(listeners,source,handler));
 
@@ -76,7 +76,7 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 		return list;
 	}
 
-	protected List<ListenerCaller> createListenerCallers(List<AggregatorEventListener> listeners, EventSourceBase source, ListenerExceptionHandler handler){
+	protected List<ListenerCaller> createListenerCallers(List<AggregatorEventListener> listeners, CommonEventSource source, ListenerExceptionHandler handler){
 		List<ListenerCaller> list = new ArrayList<ListenerCaller>(listeners.size());
 		for(AggregatorEventListener listener : listeners){
 			list.add(new ListenerCaller(listener, (AggregatorEventSource)source, handler));
@@ -84,9 +84,9 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 		return list;
 	}
 
-	protected List<ListenerCaller> createListenerCallers(AggregatorEventListener listener, List<EventSourceBase> sources, ListenerExceptionHandler handler){
+	protected List<ListenerCaller> createListenerCallers(AggregatorEventListener listener, List<CommonEventSource> sources, ListenerExceptionHandler handler){
 		List<ListenerCaller> list = new ArrayList<ListenerCaller>(sources.size());
-		for(EventSourceBase source : sources){
+		for(CommonEventSource source : sources){
 			list.add(new ListenerCaller(listener, (AggregatorEventSource)source, handler));
 		}
 		return list;
@@ -129,7 +129,7 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 		
 	}
 
-	protected ListenersConsumedResult executeListenerSources(AggregatorEventListener listener, List<EventSourceBase> sources,
+	protected ListenersConsumedResult executeListenerSources(AggregatorEventListener listener, List<CommonEventSource> sources,
 															 ListenerExceptionHandler handler, ThreadPoolExecutor executor) throws InterruptedException {
 		long start = System.currentTimeMillis();
 		List<Future<ListenerConsumedResult>> tasks = executor.invokeAll(createListenerCallers(listener,sources,handler));
@@ -148,7 +148,7 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 
 	@Override
 	public ListenersConsumedResult executeListenerSources(
-            AggregatorEventListener listener, List<EventSourceBase> sources,
+            AggregatorEventListener listener, List<CommonEventSource> sources,
             ListenerExceptionHandler handler) throws InterruptedException {
 		return executeListenerSources(listener, sources, handler, threadPool);
 	}
@@ -171,14 +171,17 @@ public class SimpleAggregatorContainer implements AggregatorContainer {
 					"-thread-";
 		}
 
+		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = new Thread(group, r,
 					namePrefix + threadNumber.getAndIncrement(),
 					0);
-			if (t.isDaemon())
+			if (t.isDaemon()) {
 				t.setDaemon(false);
-			if (t.getPriority() != Thread.NORM_PRIORITY)
+			}
+			if (t.getPriority() != Thread.NORM_PRIORITY) {
 				t.setPriority(Thread.NORM_PRIORITY);
+			}
 			return t;
 		}
 	}

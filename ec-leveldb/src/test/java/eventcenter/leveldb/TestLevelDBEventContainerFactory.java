@@ -49,7 +49,7 @@ public class TestLevelDBEventContainerFactory {
 	class TestListener implements EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			try {
 				System.out.println("begin consuming:" + source.getEventId());
 				Thread.sleep(1000);

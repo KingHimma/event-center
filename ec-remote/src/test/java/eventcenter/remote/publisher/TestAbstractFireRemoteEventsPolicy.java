@@ -147,7 +147,7 @@ public class TestAbstractFireRemoteEventsPolicy {
         }
 
         @Override
-        public void onObserved(EventSourceBase source) {
+        public void onObserved(CommonEventSource source) {
             //System.out.println("local event consumed");
             this.eventIds.add(source.getEventId());
         }

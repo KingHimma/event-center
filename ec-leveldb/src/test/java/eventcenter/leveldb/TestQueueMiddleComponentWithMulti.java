@@ -134,7 +134,7 @@ public class TestQueueMiddleComponentWithMulti {
 	
 	class Test4QueueTask implements Runnable{
 
-		private EventSourceBase evt;
+		private CommonEventSource evt;
 		
 		private final Set<String> uuids;
 		

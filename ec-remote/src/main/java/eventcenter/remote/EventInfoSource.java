@@ -1,23 +1,23 @@
 package eventcenter.remote;
 
-import java.io.Serializable;
-
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventInfo;
-import eventcenter.api.EventSourceBase;
+
+import java.io.Serializable;
 
 /**
  * 封装了{@link EventInfo}和事件的result事件源
  * @author JackyLIU
  *
  */
-public class EventInfoSource extends EventSourceBase implements Serializable{
+public class EventInfoSource extends CommonEventSource implements Serializable{
 	
 	public EventInfoSource(Object source, String eventId, String eventName, String mdcValue) {
-		super(source, eventId, eventName, mdcValue);
+		super(source, eventId, eventName, null, null, mdcValue);
 	}
 	
 	public EventInfoSource(){
-		super("", null ,null, null);
+		this("", null, null, null);
 	}
 
 	private Target target;
@@ -39,6 +39,7 @@ public class EventInfoSource extends EventSourceBase implements Serializable{
 		this.eventInfo = eventInfo;
 	}
 
+	@Override
 	public Object getResult() {
 		return result;
 	}

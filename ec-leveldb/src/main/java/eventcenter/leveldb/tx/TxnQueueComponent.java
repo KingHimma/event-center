@@ -1,7 +1,7 @@
 package eventcenter.leveldb.tx;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.tx.EventTxnStatus;
 import eventcenter.api.tx.ResumeTxnHandler;
 import eventcenter.remote.utils.StringHelper;
@@ -17,7 +17,9 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created by liumingjian on 2016/12/23.
+ *
+ * @author liumingjian
+ * @date 2016/12/23
  */
 public class TxnQueueComponent {
 
@@ -81,8 +83,9 @@ public class TxnQueueComponent {
     }
 
     public void open() throws IOException {
-        if(isOpen)
+        if(isOpen) {
             return ;
+        }
         loadInfo();
         loadBuckets();
         isOpen = true;
@@ -121,8 +124,6 @@ public class TxnQueueComponent {
             isFirstLoad = false;
         }
         bucketGroup.loadTxnBucket(db, txnQueueInfo.getTxnBucketId());
-        //bucketGroup.loadFailureBucket(db, txnQueueInfo.getFailureBucketId());
-        //bucketGroup.loadDiscardBucket(db, txnQueueInfo.getDiscardBucketId());
         if(isFirstLoad){
             updateInfo();
         }
@@ -141,8 +142,9 @@ public class TxnQueueComponent {
     }
 
     public void setFailureCapacity(Integer failureCapacity) {
-        if(failureCapacity < txnCapacity*5)
+        if(failureCapacity < txnCapacity*5) {
             throw new IllegalArgumentException("failureCapacity need be more or equal than txnCapacity * 5");
+        }
         this.failureCapacity = failureCapacity;
     }
 
@@ -151,8 +153,9 @@ public class TxnQueueComponent {
     }
 
     public void setDiscardCapacity(Integer discardCapacity) {
-        if(discardCapacity < txnCapacity*5)
+        if(discardCapacity < txnCapacity*5) {
             throw new IllegalArgumentException("failureCapacity need be more or equal than txnCapacity * 5");
+        }
         this.discardCapacity = discardCapacity;
     }
 
@@ -189,14 +192,15 @@ public class TxnQueueComponent {
     }
 
     private void updateDB(WriteBatch wb) throws IOException {
-        if(!isOpen)
+        if(!isOpen) {
             return ;
+        }
         db.write(wb);
         wb.close();
     }
 
-    EventSourceBase getEvent(String txnId) throws IOException {
-        return LevelDBBucket.get(db, wrapperKey(txnId), EventSourceBase.class);
+    CommonEventSource getEvent(String txnId) throws IOException {
+        return LevelDBBucket.get(db, wrapperKey(txnId), CommonEventSource.class);
     }
 
     private void deleteEvent(WriteBatch wb, String txnId){
@@ -230,8 +234,9 @@ public class TxnQueueComponent {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try{
-            if(!this.isOpen)
+            if(!this.isOpen) {
                 throw new IllegalAccessException("queue had been closed");
+            }
             return invoker.lockAndInvoke();
         }finally {
             lock.unlock();
@@ -410,12 +415,15 @@ public class TxnQueueComponent {
 
         EventTxnStatus getTxnStatus(String eventId, Class<? extends EventListener> listenerType, String txnId, WriteBatch writeBatch) throws Exception {
             LevelDBEventTxnStatus status = findStatus(txnId, listenerType);
-            if(null != status)
+            if(null != status) {
                 return status;
-            if(!invokedGetTxnStatus)
+            }
+            if(!invokedGetTxnStatus) {
                 setInvokedGetTxnStatus(true);
-            if(null != writeBatch)
+            }
+            if(null != writeBatch) {
                 return createTxnStatus(eventId, listenerType, txnId, writeBatch);
+            }
             return createTxnStatus(eventId, listenerType, txnId);
         }
 
@@ -439,8 +447,9 @@ public class TxnQueueComponent {
                     try {
                         String index = buildTxnKey(status.getBucketTxnId());
                         index = txnBucket.popByIndex(writeBatch, index);
-                        if (null == index)
+                        if (null == index) {
                             throw new IllegalAccessException("txn can't be found or may had been commit!");
+                        }
                         if (deleteStatus(writeBatch, status)) {
                             deleteEvent(writeBatch, status.getTxnId());
                         }
@@ -456,10 +465,12 @@ public class TxnQueueComponent {
         }
 
         void resumeTxn(final ResumeTxnHandler handler) throws IllegalAccessException, IOException {
-            if(invokedGetTxnStatus)
+            if(invokedGetTxnStatus) {
                 throw new IllegalAccessException("it must be invoked before first getTxnStatus");
-            if(null == handler)
+            }
+            if(null == handler) {
                 throw new IllegalArgumentException("please set ResumeTxnHandler parameter");
+            }
 
             txnBucket.iterateIndex(new IndexIterator() {
                 @Override
@@ -471,7 +482,7 @@ public class TxnQueueComponent {
                         removeTxnBucketIndex(index);
                         return;
                     }
-                    EventSourceBase event = null;
+                    CommonEventSource event = null;
                     boolean fail2delete = false;
                     try {
                         event = getEvent(txn.getTxnId());
@@ -525,13 +536,15 @@ public class TxnQueueComponent {
 
         LevelDBEventTxnStatus findStatus(String txnId, Class<? extends EventListener> listenerType) throws IOException {
             TxnRef txnRef = queryTxnRef(txnId);
-            if(null == txnRef)
+            if(null == txnRef) {
                 return null;
+            }
             List<LevelDBEventTxnStatus> list = new ArrayList<LevelDBEventTxnStatus>(txnRef.getTxnCount());
             for(String bucketTxnId : txnRef.getBucketTxnIds()){
                 LevelDBEventTxnStatus status = findStatusByBucketTxnId(bucketTxnId);
-                if(status.getListenerType() == listenerType)
+                if(status.getListenerType() == listenerType) {
                     return status;
+                }
             }
             return null;
         }

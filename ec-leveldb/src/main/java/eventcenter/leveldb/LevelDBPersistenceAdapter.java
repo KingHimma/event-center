@@ -1,6 +1,6 @@
 package eventcenter.leveldb;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.utils.IdWorker;
 import eventcenter.api.utils.SerializeUtils;
 import org.apache.log4j.Logger;
@@ -146,23 +146,31 @@ public class LevelDBPersistenceAdapter implements Closeable{
 	protected Options createOptions() {
 		Options options = new Options();
 		options.createIfMissing(true);
-		if (null != blockRestartInterval)
+		if (null != blockRestartInterval) {
 			options.blockRestartInterval(blockRestartInterval);
-		if (null != blockSize)
+		}
+		if (null != blockSize) {
 			options.blockSize(blockSize);
-		if (null != cacheSize)
+		}
+		if (null != cacheSize) {
 			options.cacheSize(cacheSize);
-		if (null != useSnappyCompression && useSnappyCompression.booleanValue())
+		}
+		if (null != useSnappyCompression && useSnappyCompression.booleanValue()) {
 			options.compressionType(CompressionType.SNAPPY);
-		if (null != maxOpenFiles)
+		}
+		if (null != maxOpenFiles) {
 			options.maxOpenFiles(maxOpenFiles);
-		if (null != paranoidChecks)
+		}
+		if (null != paranoidChecks) {
 			options.paranoidChecks(paranoidChecks);
-		if (null != verifyChecksums)
+		}
+		if (null != verifyChecksums) {
 			options.verifyChecksums(verifyChecksums);
-		if (null != writeBufferSize)
+		}
+		if (null != writeBufferSize) {
 			options.writeBufferSize(writeBufferSize);
-		if(null != openLogger && openLogger)
+		}
+		if(null != openLogger && openLogger) {
 			options.logger(new org.iq80.leveldb.Logger() {
 				@Override
 				public void log(String message) {
@@ -171,12 +179,14 @@ public class LevelDBPersistenceAdapter implements Closeable{
 					}
 				}
 			});
+		}
 		return options;
 	}
 
 	public synchronized void open() throws IOException {
-		if(null != db)
+		if(null != db) {
 			return ;
+		}
 		Options options = createOptions();
 		File dirPath = getDirPath();
 		db = factory.open(dirPath, options);
@@ -185,9 +195,11 @@ public class LevelDBPersistenceAdapter implements Closeable{
 		}
 	}
 
+	@Override
 	public synchronized void close() throws IOException {
-		if(db == null)
+		if(db == null) {
 			return ;
+		}
 		db.close();
 		db = null;
 		if(logger.isDebugEnabled()){
@@ -217,7 +229,7 @@ public class LevelDBPersistenceAdapter implements Closeable{
 	 * @throws PersistenceException
 	 * @return 返回的是txnId
 	 */
-	public String save(EventSourceBase evt)
+	public String save(CommonEventSource evt)
 			throws PersistenceException {
 		EventSourceWrapper wrapper = new EventSourceWrapper(nextId(), evt);
 		put(wrapper.getTxnId(), wrapper);
@@ -253,8 +265,9 @@ public class LevelDBPersistenceAdapter implements Closeable{
 	
 	public <T> T get(String key, Class<T> type) throws PersistenceException{
 		try {
-			if(null == db)
+			if(null == db) {
 				return null;
+			}
 			Serializable value = SerializeUtils.unserialize(db.get(key.getBytes()));
 			if(null == value){
 				return null;
@@ -352,8 +365,9 @@ public class LevelDBPersistenceAdapter implements Closeable{
 		int index = 0;
 		try{
 			iterator.seekToFirst();
-			if(!iterator.hasNext())
+			if(!iterator.hasNext()) {
 				return 0;
+			}
 			WriteBatch wb = db.createWriteBatch();
 			try{
 				for (; index < batchDeleteSize && iterator.hasNext(); iterator.next(),index++) {

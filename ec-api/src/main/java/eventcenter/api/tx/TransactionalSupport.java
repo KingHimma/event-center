@@ -1,9 +1,8 @@
 package eventcenter.api.tx;
 
+import eventcenter.api.CommonEventSource;
+import eventcenter.api.EventContainer;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.EventContainer;
-import eventcenter.api.EventContainer;
 
 /**
  * <pre>
@@ -19,7 +18,7 @@ import eventcenter.api.EventContainer;
 public interface TransactionalSupport {
 
     /**
-     * 恢复未执行的事务，这个方法需要在第一次调用{@link #getTxnStatus(EventSourceBase, String, EventListener)}方法之前执行，这样就可以恢复执行那些
+     * 恢复未执行的事务，这个方法需要在第一次调用{@link #getTxnStatus(CommonEventSource, String, EventListener)}方法之前执行，这样就可以恢复执行那些
      * 因为服务故障导致事务未提交的事件
      * @param handler
      */
@@ -31,7 +30,7 @@ public interface TransactionalSupport {
      * @param txnId 事务编号，这个数据来自缓存队列中的存储的唯一ID
      * @param listener
      */
-    EventTxnStatus getTxnStatus(EventSourceBase event, String txnId, EventListener listener)  throws Exception;
+    EventTxnStatus getTxnStatus(CommonEventSource event, String txnId, EventListener listener)  throws Exception;
 
     /**
      * 提交事务，如果事务成功执行，将会提交这个事务

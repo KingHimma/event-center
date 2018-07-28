@@ -12,7 +12,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 构建{@link AggregatorContainer}并发聚合容器
- * Created by liumingjian on 2017/9/1.
+ *
+ * @author liumingjian
+ * @date 2017/9/1
  */
 public class AggregatorContainerBuilder {
 

@@ -56,7 +56,7 @@ public class TestLoadListenerFilter {
     public class NonFilterableFilter implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             return true;
         }
 
@@ -70,7 +70,7 @@ public class TestLoadListenerFilter {
     class AddFilterableFilter implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             return true;
         }
 
@@ -84,7 +84,7 @@ public class TestLoadListenerFilter {
     public class AddMultiFilterableFilter implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             return true;
         }
 
@@ -98,7 +98,7 @@ public class TestLoadListenerFilter {
     public class AddGlobalFilter implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             return true;
         }
 

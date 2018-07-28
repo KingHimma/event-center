@@ -47,16 +47,16 @@ public abstract class QueueEventContainer implements EventContainer {
 	public abstract boolean isIdle();
 	
 	@Override
-	public Object send(EventSourceBase source) {
+	public Object send(CommonEventSource source) {
 		queue.offer(source);
 		return null;
 	}
 	
-	protected EventRegister getEventRegister(EventSourceBase evt){
+	protected EventRegister getEventRegister(CommonEventSource evt){
 		return config.getEventRegisters().get(evt.getEventName());
 	}
 	
-	protected List<EventListener> findAsyncEventListeners(EventSourceBase message){
+	protected List<EventListener> findAsyncEventListeners(CommonEventSource message){
 		EventRegister register = getEventRegister(message);
 		if(null == register){
 			logger.warn("can't find register for event:" + message.getEventName());

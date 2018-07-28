@@ -8,7 +8,7 @@ package eventcenter.api;
 public class CommonEventRegister extends AbstractEventRegister {
 
 	@Override
-	public EventSourceBase createEventSource(Object source, String id, String eventName, Object[] args,
+	public CommonEventSource createEventSource(Object source, String id, String eventName, Object[] args,
 			Object result, String mdcValue) {
 		return new CommonEventSource(source, id, eventName, args, result, mdcValue);
 	}

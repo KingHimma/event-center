@@ -1,18 +1,14 @@
 package eventcenter.api.async.simple;
 
-import java.io.IOException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.async.EventQueue;
 import eventcenter.api.async.MessageListener;
 import eventcenter.api.async.QueueException;
 import org.apache.log4j.Logger;
 
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.async.EventQueue;
-import eventcenter.api.async.MessageListener;
-import eventcenter.api.async.QueueException;
+import java.io.IOException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 此版本将异步事件发送到队列，然后由后台开启线程池，处理队列中的消息，队列使用的是{@link LinkedBlockingQueue}
@@ -23,7 +19,7 @@ public class SimpleEventQueue implements EventQueue {
 	
 	public static final int DEFAULT_QUEUE_CAPACITY = Integer.MAX_VALUE;
 	
-	private final LinkedBlockingQueue<EventSourceBase> queue;
+	private final LinkedBlockingQueue<CommonEventSource> queue;
 	
 	private final Logger logger = Logger.getLogger(this.getClass());
 	
@@ -45,7 +41,7 @@ public class SimpleEventQueue implements EventQueue {
 	}
 	
 	public SimpleEventQueue(int queueCapacity){
-		queue = new LinkedBlockingQueue<EventSourceBase>(queueCapacity);
+		queue = new LinkedBlockingQueue<CommonEventSource>(queueCapacity);
 	}
 
 	@Override
@@ -61,7 +57,7 @@ public class SimpleEventQueue implements EventQueue {
 	}
 
 	@Override
-	public void offer(EventSourceBase element) {
+	public void offer(CommonEventSource element) {
 		boolean result = queue.offer(element);
 		if(!result){
 			logger.warn("enqueue failure, may be queue is in full size.");
@@ -69,7 +65,7 @@ public class SimpleEventQueue implements EventQueue {
 	}
 
 	@Override
-	public void offer(EventSourceBase element, long timeout) {
+	public void offer(CommonEventSource element, long timeout) {
 		try {
 			boolean result = queue.offer(element, timeout, TimeUnit.MILLISECONDS);
 			if(!result){
@@ -81,7 +77,7 @@ public class SimpleEventQueue implements EventQueue {
 	}
 
 	@Override
-	public EventSourceBase transfer() {
+	public CommonEventSource transfer() {
 		try {
 			return queue.take();
 		} catch (InterruptedException e) {
@@ -93,9 +89,10 @@ public class SimpleEventQueue implements EventQueue {
 	 * 简单版的不支持超时设置
 	 */
 	@Override
-	public EventSourceBase transfer(long timeout) {
-		if(closed)
+	public CommonEventSource transfer(long timeout) {
+		if(closed) {
 			return null;
+		}
 		try {
 			return queue.take();
 		} catch (InterruptedException e) {
@@ -128,12 +125,14 @@ public class SimpleEventQueue implements EventQueue {
 	}
 	
 	protected void closeListener(boolean needSleep) throws InterruptedException{
-		if(monitorQueue == null)
+		if(monitorQueue == null) {
 			return ;
+		}
 		if(openListener){
 			openListener = false;
-			if(needSleep)
+			if(needSleep) {
 				Thread.sleep(transferTimeout);
+			}
 		}
 	}
 
@@ -147,9 +146,10 @@ public class SimpleEventQueue implements EventQueue {
 		public void run() {
 			while(!closed && openListener){
 				try{
-					final EventSourceBase evt = transfer(transferTimeout);
-					if(null == evt)
+					final CommonEventSource evt = transfer(transferTimeout);
+					if(null == evt) {
 						continue;
+					}
 
 					messageListener.onMessage(evt);
 					if(logger.isDebugEnabled()){

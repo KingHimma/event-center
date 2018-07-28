@@ -1,9 +1,9 @@
 package eventcenter.leveldb;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventCenterConfig;
 import eventcenter.api.EventInfo;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.support.DefaultEventCenter;
 import org.fusesource.leveldbjni.JniDBFactory;
 import org.iq80.leveldb.Options;
@@ -80,7 +80,7 @@ public class TestLevelDBContainer {
 	class TestListener implements EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			try {
 				System.out.println("begin consuming:" + source.getEventId());
 				Thread.sleep(1000);
@@ -101,7 +101,7 @@ public class TestLevelDBContainer {
 		}
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			this.uuids.add(source.getEventId());
 		}
 		

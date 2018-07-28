@@ -223,7 +223,7 @@ public class TestLevelDBQueueUnderLoad {
 	
 	class Test3Task implements Runnable{
 
-		private EventSourceBase evt;
+		private CommonEventSource evt;
 		
 		private final List<String> uuids;
 		
@@ -245,7 +245,7 @@ public class TestLevelDBQueueUnderLoad {
 	
 	class Test4Task implements Runnable{
 
-		private EventSourceBase evt;
+		private CommonEventSource evt;
 		
 		private final List<String> uuids;
 		
@@ -307,7 +307,7 @@ public class TestLevelDBQueueUnderLoad {
 						e.printStackTrace();
 					}
 				}else{
-					for(EventSourceBase evt : list){
+					for(CommonEventSource evt : list){
 						if(evt == null){
 							System.err.println("发现一个空数据，当前读取页数:" + printCursor(queueMiddle.readCursor));
 							continue;

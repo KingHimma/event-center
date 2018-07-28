@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by liumingjian on 2017/4/6.
+ *
+ * @author liumingjian
+ * @date 2017/4/6
  */
 public class MySqlEventFireFilter implements EventFireFilter {
     private final Logger logger = Logger.getLogger(this.getClass());
@@ -77,8 +79,9 @@ public class MySqlEventFireFilter implements EventFireFilter {
     }
 
     private String getNodeId(){
-        if(StringHelper.isNotEmpty(nodeId))
+        if(StringHelper.isNotEmpty(nodeId)) {
             return nodeId;
+        }
         try {
             nodeId = IdentifyContext.getId();
         } catch (Exception e) {
@@ -89,10 +92,12 @@ public class MySqlEventFireFilter implements EventFireFilter {
     }
 
     FiredEventDAO getFiredEventDAO() {
-        if(null != firedEventDAO)
+        if(null != firedEventDAO) {
             return firedEventDAO;
-        if(null == controlMonitorDataSource)
+        }
+        if(null == controlMonitorDataSource) {
             throw new IllegalArgumentException("please set parameter of controlMonitorDataSource");
+        }
         firedEventDAO = new FiredEventDAO(controlMonitorDataSource);
         return firedEventDAO;
     }
@@ -120,9 +125,9 @@ public class MySqlEventFireFilter implements EventFireFilter {
 
         @Override
         public void run() {
-            List<EventSourceBase> list = new ArrayList<EventSourceBase>(batchSaveNum);
+            List<CommonEventSource> list = new ArrayList<CommonEventSource>(batchSaveNum);
             while (isOpen) {
-                EventSourceBase eventSourceBase = queue.transfer(1000);
+                CommonEventSource eventSourceBase = queue.transfer(1000);
                 String nid = getNodeId();
                 if (null != nid && null != eventSourceBase) {
                     list.add(eventSourceBase);
@@ -130,7 +135,7 @@ public class MySqlEventFireFilter implements EventFireFilter {
                 if (batchSaveNum == list.size()) {
                     try {
                         List<FiredEventDAO.FiredEventSaveDTO> dtos = new ArrayList<FiredEventDAO.FiredEventSaveDTO>(batchSaveNum);
-                        for (EventSourceBase sourceBase : list) {
+                        for (CommonEventSource sourceBase : list) {
                             FiredEventDAO.FiredEventSaveDTO dto = new FiredEventDAO.FiredEventSaveDTO();
                             dto.setSourceClassName(sourceBase.getSourceClassName());
                             dto.setEventInfo((EventInfo) sourceBase.getSourceInfo());

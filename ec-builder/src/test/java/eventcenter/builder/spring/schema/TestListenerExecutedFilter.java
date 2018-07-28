@@ -10,7 +10,7 @@ import eventcenter.api.ListenerReceipt;
  */
 public class TestListenerExecutedFilter implements ListenerFilter {
     @Override
-    public boolean before(EventListener listener, EventSourceBase evt) {
+    public boolean before(EventListener listener, CommonEventSource evt) {
         return false;
     }
 

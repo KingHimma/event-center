@@ -2,7 +2,6 @@ package eventcenter.api.aggregator.simple;
 
 import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.aggregator.*;
 import eventcenter.api.annotation.ListenerBind;
 import org.junit.After;
@@ -54,7 +53,7 @@ public class TestSimpleAggregatorContainer2 {
 		ListenersConsumedResult results = container.executeListeners(Arrays.asList(listener1, listener2), source, new ListenerExceptionHandler(){
 			@Override
 			public Object handle(EventListener listener,
-					EventSourceBase source, Exception e) {
+					CommonEventSource source, Exception e) {
 				return null;
 			}
 		});
@@ -78,7 +77,7 @@ public class TestSimpleAggregatorContainer2 {
 		container.executeListeners(Arrays.asList(listener1, listener2), source, new ListenerExceptionHandler(){
 			@Override
 			public Object handle(EventListener listener,
-								 EventSourceBase source, Exception e) {
+								 CommonEventSource source, Exception e) {
 				return null;
 			}
 		});
@@ -92,15 +91,15 @@ public class TestSimpleAggregatorContainer2 {
 	public void testWithSplit() throws InterruptedException{
 		final Long delay = 5000L;
 		listener3 = new AggregatorListener3(delay);
-		EventSourceBase source1 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 1}, null, null));
-		EventSourceBase source2 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 2}, null, null));
-		EventSourceBase source3 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 3}, null, null));
+		CommonEventSource source1 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 1}, null, null));
+		CommonEventSource source2 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 2}, null, null));
+		CommonEventSource source3 = new AggregatorEventSource(new CommonEventSource(this, UUID.randomUUID().toString(), "test2", new Object[]{"Hello", "World", 3}, null, null));
 
 		final long start = System.currentTimeMillis();
 		ListenersConsumedResult results = container.executeListenerSources(listener3, Arrays.asList(source1, source2, source3), new ListenerExceptionHandler() {
 			@Override
 			public Object handle(EventListener listener,
-								 EventSourceBase source, Exception e) {
+								 CommonEventSource source, Exception e) {
 				return null;
 			}
 		});
@@ -130,7 +129,7 @@ public class TestSimpleAggregatorContainer2 {
 		}
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 
 			if(this.delay > 0L){
@@ -160,7 +159,7 @@ public class TestSimpleAggregatorContainer2 {
 		}
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			if(this.delay > 0L){
 				try {
@@ -188,7 +187,7 @@ public class TestSimpleAggregatorContainer2 {
 		}
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			if(this.delay > 0L){
 				try {

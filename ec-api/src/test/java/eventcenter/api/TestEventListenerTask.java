@@ -134,8 +134,8 @@ public class TestEventListenerTask {
         Assert.assertEquals(1, beforeFilterExec);
         Assert.assertEquals(1, afterFilterExec);
         Assert.assertEquals(1, listenerExec);
-        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
-        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
     }
 
     @Test
@@ -143,8 +143,8 @@ public class TestEventListenerTask {
         ListenerExecuted listenerExecuted = Mockito.mock(ListenerExecuted.class);
         task.setListenerExecuted(listenerExecuted);
         test3();
-        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
-        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
     }
 
     @Test
@@ -152,8 +152,8 @@ public class TestEventListenerTask {
         ListenerExecuted listenerExecuted = Mockito.mock(ListenerExecuted.class);
         task.setListenerExecuted(listenerExecuted);
         test4();
-        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
-        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
     }
 
     @Test
@@ -169,8 +169,8 @@ public class TestEventListenerTask {
         Assert.assertEquals(1, beforeFilterExec);
         Assert.assertEquals(1, afterFilterExec);
         Assert.assertEquals(1, listenerExec);
-        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
-        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
     }
 
     @Test
@@ -186,14 +186,14 @@ public class TestEventListenerTask {
         Assert.assertEquals(1, beforeFilterExec);
         Assert.assertEquals(0, afterFilterExec);
         Assert.assertEquals(0, listenerExec);
-        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
-        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(EventSourceBase.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atLeastOnce()).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
+        Mockito.verify(listenerExecuted, Mockito.atMost(1)).afterExecuted(Mockito.any(CommonEventSource.class), Mockito.any(EventListener.class), Mockito.any(Throwable.class));
     }
 
     class SampleListener implements EventListener {
 
         @Override
-        public void onObserved(EventSourceBase source) {
+        public void onObserved(CommonEventSource source) {
             if(listenerThrow)
                 throw new IllegalArgumentException();
             listenerExec++;
@@ -203,7 +203,7 @@ public class TestEventListenerTask {
     class SampleFilter implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             if(filterThrow)
                 throw new IllegalArgumentException();
             beforeFilterExec++;
@@ -224,7 +224,7 @@ public class TestEventListenerTask {
     class SampleFilter2 implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             beforeFilterExec++;
             return true;
         }
@@ -238,7 +238,7 @@ public class TestEventListenerTask {
     class SampleFilter3 implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             beforeFilterExec++;
             return false;
         }

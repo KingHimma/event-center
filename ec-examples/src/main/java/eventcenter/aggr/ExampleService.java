@@ -3,7 +3,6 @@ package eventcenter.aggr;
 import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventInfo;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.aggregator.EventAggregatable;
 import eventcenter.api.aggregator.ListenersConsumedResult;
 import eventcenter.api.aggregator.ResultAggregator;
@@ -48,7 +47,7 @@ public class ExampleService {
              
             @Override
             public Object exceptionHandler(EventListener listener,
-                    EventSourceBase source, Exception e) {
+                                           CommonEventSource source, Exception e) {
                 return null;
             }
             @SuppressWarnings("unchecked")

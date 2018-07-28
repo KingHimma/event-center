@@ -1,9 +1,6 @@
 package eventcenter.leveldb;
 
-import eventcenter.api.EventCenterConfig;
-import eventcenter.api.EventListener;
-import eventcenter.api.EventListenerTask;
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.*;
 import eventcenter.api.async.EventQueue;
 import eventcenter.api.async.QueueEventContainer;
 import eventcenter.api.tx.EventTxnStatus;
@@ -128,8 +125,10 @@ public class LevelDBContainer extends QueueEventContainer {
 		this.threadPool = createThreadPool();
 		this.listenQueueThread = new ListenQueueThread(locker, this);
 		LevelDBQueue _q = (LevelDBQueue)queue;
-		if(this.transactionConfig != null)
-			_q.setTxnCapacity(maximumPoolSize + this.blockingQueueSize + 20);	// it must be set
+		if(this.transactionConfig != null) {
+			// it must be set
+			_q.setTxnCapacity(maximumPoolSize + this.blockingQueueSize + 20);
+		}
 		_q.open();
 		this.listenQueueThread.start();
 		logger.info("leveldb container startup success");
@@ -204,8 +203,9 @@ public class LevelDBContainer extends QueueEventContainer {
 	 * @return
 	 */
 	boolean checkUncommitTransactions(){
-		if(null == transactionConfig)
+		if(null == transactionConfig) {
 			return false;
+		}
 
 		try {
 			int count = getLevelDBQueue().getTxnQueueComponent().countOfTxn();
@@ -222,14 +222,15 @@ public class LevelDBContainer extends QueueEventContainer {
 		}
 	}
 
-	protected EventListener findAsyncEventListeners(EventSourceBase message, Class<? extends EventListener> type){
+	protected EventListener findAsyncEventListeners(CommonEventSource message, Class<? extends EventListener> type){
 		List<EventListener> listeners = super.findAsyncEventListeners(message);
 		if(listeners.size() == 0){
 			return null;
 		}
 		for(EventListener listener : listeners){
-			if(listener.getClass() == type)
+			if(listener.getClass() == type) {
 				return listener;
+			}
 		}
 		return null;
 	}
@@ -262,7 +263,7 @@ public class LevelDBContainer extends QueueEventContainer {
 				try{
 					getLevelDBQueue().getTxnQueueComponent().resumeTxn(new ResumeTxnHandler() {
 						@Override
-						public void resume(EventTxnStatus status, EventSourceBase event) {
+						public void resume(EventTxnStatus status, CommonEventSource event) {
 							EventListener listener = findAsyncEventListeners(event, status.getListenerType());
 							if(null == listener){
 								logger.warn(new StringBuilder("txnId[").append(status.getTxnId()).append("], evt:").append(event).append(" can't found listener:").append(status.getListenerType()).append(", resume failure"));
@@ -297,7 +298,7 @@ public class LevelDBContainer extends QueueEventContainer {
 
 		private void listenQueue(){
 			long start = System.currentTimeMillis();
-			EventSourceBase evt = queue.transfer(loopQueueInterval);
+			CommonEventSource evt = queue.transfer(loopQueueInterval);
 			if (null == evt) {
 				return ;
 			}
@@ -306,8 +307,9 @@ public class LevelDBContainer extends QueueEventContainer {
 			}
 
 			List<EventListener> listeners = findAsyncEventListeners(evt);
-			if (null == listeners || listeners.size() == 0)
+			if (null == listeners || listeners.size() == 0) {
 				return ;
+			}
 
 			consumeEvent(evt, listeners, null);
 		}
@@ -316,7 +318,7 @@ public class LevelDBContainer extends QueueEventContainer {
 			long start = System.currentTimeMillis();
 			DB db = getLevelDBQueue().getQueueMiddleComponent().getDB();
 			WriteBatch wb = db.createWriteBatch();
-			EventSourceBase evt = null;
+			CommonEventSource evt = null;
 			List<EventListener> listeners = null;
 			List<EventTxnStatus> txnList = null;
 			try {
@@ -329,8 +331,9 @@ public class LevelDBContainer extends QueueEventContainer {
 				}
 
 				listeners = findAsyncEventListeners(evt);
-				if (null == listeners || listeners.size() == 0)
+				if (null == listeners || listeners.size() == 0) {
 					return;
+				}
 				txnList = beginTransaction(evt, listeners, wb);
 			}finally{
 				db.write(wb);
@@ -342,11 +345,11 @@ public class LevelDBContainer extends QueueEventContainer {
 			}
 			if(listeners != null && listeners.size() > 0) {
 				EventSourceWrapper wrapper = (EventSourceWrapper)evt;
-				consumeEvent(wrapper.getEvt(), listeners, txnList);
+				consumeEvent(wrapper, listeners, txnList);
 			}
 		}
 
-		private void consumeEvent(final EventSourceBase evt, final List<EventListener> listeners, final List<EventTxnStatus> txns){
+		private void consumeEvent(final CommonEventSource evt, final List<EventListener> listeners, final List<EventTxnStatus> txns){
 			int index = 0;
 			for (EventListener listener : listeners) {
 				EventTxnStatus txn = null;
@@ -361,12 +364,9 @@ public class LevelDBContainer extends QueueEventContainer {
 			}
 		}
 
-		private void consumeEvent(EventSourceBase evt, final EventListener listener, final EventTxnStatus txn){
+		private void consumeEvent(CommonEventSource evt, final EventListener listener, final EventTxnStatus txn){
 			boolean innerFlag = true;
 			EventListenerTask task = null;
-			if(evt instanceof EventSourceWrapper){
-				evt = ((EventSourceWrapper)evt).getEvt();
-			}
 			if(txn == null) {
 				task = new EventListenerTask(listener, evt);
 			}else{
@@ -392,12 +392,12 @@ public class LevelDBContainer extends QueueEventContainer {
 			}
 		}
 
-		private List<EventTxnStatus> beginTransaction(final EventSourceBase evt, final List<EventListener> listeners, final WriteBatch writeBatch){
+		private List<EventTxnStatus> beginTransaction(final CommonEventSource evt, final List<EventListener> listeners, final WriteBatch writeBatch){
 			EventSourceWrapper wrapper = (EventSourceWrapper)evt;
 			List<EventTxnStatus> txnList = new ArrayList<EventTxnStatus>(listeners.size() + 1);
 			for(EventListener listener : listeners){
 				try {
-					txnList.add(getLevelDBQueue().getTxnStatus(wrapper.getEvt(), wrapper.getTxnId(), listener, writeBatch));
+					txnList.add(getLevelDBQueue().getTxnStatus(wrapper, wrapper.getTxnId(), listener, writeBatch));
 				} catch (Exception e) {
 					logger.error("getTxnStatus error:" + e.getMessage(), e);
 				}
@@ -405,18 +405,15 @@ public class LevelDBContainer extends QueueEventContainer {
 			return txnList;
 		}
 		
-		/*private void waitForRelease(){
-			waitForRelease(-1L);
-		}*/
-		
 		private void waitForRelease(long timeout){
 			final Object locker = this.locker;
 			synchronized(locker){
 				try {
-					if(timeout == -1L)
+					if(timeout == -1L) {
 						locker.wait();
-					else
+					} else {
 						locker.wait(timeout);
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -434,8 +431,9 @@ public class LevelDBContainer extends QueueEventContainer {
 
 	@Override
 	public int countOfMaxConcurrent() {
-		if(null == threadPool)
+		if(null == threadPool) {
 			return 0;
+		}
 		return threadPool.getMaximumPoolSize();
 	}
 
@@ -446,8 +444,9 @@ public class LevelDBContainer extends QueueEventContainer {
 
 	@Override
 	public int countOfQueueBuffer() {
-		if(null == threadPool)
+		if(null == threadPool) {
 			return 0;
+		}
 		return threadPool.getQueue().size();
 	}
 }

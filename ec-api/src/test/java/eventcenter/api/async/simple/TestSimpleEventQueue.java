@@ -1,13 +1,10 @@
 package eventcenter.api.async.simple;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.async.MessageListener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import eventcenter.api.CommonEventSource;
-import eventcenter.api.EventSourceBase;
-import eventcenter.api.async.MessageListener;
 
 public class TestSimpleEventQueue {
 
@@ -22,7 +19,7 @@ public class TestSimpleEventQueue {
 	public void testWithNonListener(){
 		queue.offer(new CommonEventSource(this, "test", "test", null, null, null));
 		
-		EventSourceBase element = queue.transfer();
+		CommonEventSource element = queue.transfer();
 		Assert.assertNotNull(element);
 	}
 	
@@ -37,14 +34,14 @@ public class TestSimpleEventQueue {
 	
 	class SampleMessageListener implements MessageListener {
 		
-		private EventSourceBase message;
+		private CommonEventSource message;
 		
 		@Override
-		public void onMessage(EventSourceBase message) {
+		public void onMessage(CommonEventSource message) {
 			this.message = message;
 		}
 
-		public EventSourceBase getMessage() {
+		public CommonEventSource getMessage() {
 			return message;
 		}
 		

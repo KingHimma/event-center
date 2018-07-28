@@ -3,7 +3,6 @@ package eventcenter.remote.dubbo.listeners;
 import eventcenter.DateUtils;
 import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.annotation.ListenerBind;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +16,8 @@ import org.springframework.stereotype.Component;
 public class ManualEventListener implements EventListener {
 
 	@Override
-	public void onObserved(EventSourceBase source) {
-		CommonEventSource evt = (CommonEventSource)source;	// 默认的事件源使用的是CommonEventSource，当然EventSourceBase是可以定制的，请参考文档，建议使用默认方式
+	public void onObserved(CommonEventSource source) {
+		CommonEventSource evt = source;
 		String data1 = evt.getArg(0, String.class); // 获取事件参数，下标从0开始
 		Integer data2 = evt.getArg(1, Integer.class);	
 		String result = evt.getResult(String.class);	// 获取事件结果，可以把它理解为，事件参数的另一种形式

@@ -1,7 +1,6 @@
 package eventcenter.leveldb.tx;
 
 import eventcenter.api.CommonEventSource;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.EventListener;
 import eventcenter.api.tx.EventTxnStatus;
 import eventcenter.api.tx.ResumeTxnHandler;
@@ -162,7 +161,7 @@ public class TestTxnQueueComponent {
         final AtomicInteger counter = new AtomicInteger(0);
         component.resumeTxn(new ResumeTxnHandler() {
             @Override
-            public void resume(EventTxnStatus status, EventSourceBase event) {
+            public void resume(EventTxnStatus status, CommonEventSource event) {
                 Assert.assertEquals(status.getTxnId(), txnIds.get(counter.getAndIncrement()));
             }
         });
@@ -176,7 +175,7 @@ public class TestTxnQueueComponent {
         component.getTxnStatus(eventId, SampleListener.class, txnId);
         component.resumeTxn(new ResumeTxnHandler() {
             @Override
-            public void resume(EventTxnStatus status, EventSourceBase event) {
+            public void resume(EventTxnStatus status, CommonEventSource event) {
 
             }
         });
@@ -185,7 +184,7 @@ public class TestTxnQueueComponent {
     class SampleListener implements EventListener {
 
         @Override
-        public void onObserved(EventSourceBase source) {
+        public void onObserved(CommonEventSource source) {
 
         }
     }

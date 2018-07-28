@@ -1,11 +1,7 @@
 package eventcenter.remote.saf;
 
-import eventcenter.api.EventSourceBase;
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.async.EventQueue;
-import eventcenter.remote.EventInfoSource;
-import eventcenter.remote.Target;
-import eventcenter.remote.publisher.AbstractFireRemoteEventsPolicy;
-import eventcenter.remote.publisher.PublisherGroup;
 import eventcenter.remote.EventInfoSource;
 import eventcenter.remote.Target;
 import eventcenter.remote.publisher.AbstractFireRemoteEventsPolicy;
@@ -73,7 +69,7 @@ public abstract class AbstractEventForward implements EventForward {
 	 * @throws TransmissionException 
 	 */
 	public void forward(PublisherGroup publisherGroup, EventQueue eventQueue) throws TransmissionException{
-		EventSourceBase element = null;
+		CommonEventSource element = null;
 		boolean flag = true;
 		while(flag){
 			element = eventQueue.transfer(100);
@@ -88,7 +84,7 @@ public abstract class AbstractEventForward implements EventForward {
 		}
 	}
 	
-	public void forward(PublisherGroup publisherGroup, EventSourceBase element) throws TransmissionException{
+	public void forward(PublisherGroup publisherGroup, CommonEventSource element) throws TransmissionException{
 		Object source = element.getSource();
 		if(source == null && element instanceof EventInfoSource){
 			source = ((EventInfoSource)element).getTarget();
@@ -133,7 +129,7 @@ public abstract class AbstractEventForward implements EventForward {
 		/**
 		 * 上一次发送失败的元素
 		 */
-		protected EventSourceBase lastFailEvt;
+		protected CommonEventSource lastFailEvt;
 		
 		protected volatile boolean watchOpen = true;
 

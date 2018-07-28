@@ -1,7 +1,6 @@
 package eventcenter.api;
 
 import eventcenter.api.async.simple.SimpleQueueEventContainerFactory;
-import eventcenter.api.async.simple.SimpleQueueEventContainerFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.springframework.beans.BeansException;
@@ -83,8 +82,9 @@ public abstract class AbstractEventCenter implements EventCenter, ApplicationCon
 	
 	@PreDestroy
 	public void shutdown() throws Exception{
-		if(ecConfig.getAsyncContainer() == null)
+		if(ecConfig.getAsyncContainer() == null) {
 			return ;
+		}
 		if(ecConfig.getEventServices() != null){
 			for(EventService eventService : ecConfig.getEventServices()){
 				eventService.shutdown();
@@ -112,8 +112,9 @@ public abstract class AbstractEventCenter implements EventCenter, ApplicationCon
 	protected abstract long getDelay(EventInfo eventInfo, EventListener listener);
 	
 	protected void executeAsyncListeners(Object target, EventInfo eventInfo, Object result, EventRegister register){
-		if(null == getAsyncContainer())
+		if(null == getAsyncContainer()) {
 			throw new NullPointerException("无法在事件中心找到异步事件发送容器,asyncContainer==null");
+		}
 
 		try{
 			getAsyncContainer().send(createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), result, getMdcValue(eventInfo)));
@@ -128,7 +129,7 @@ public abstract class AbstractEventCenter implements EventCenter, ApplicationCon
 		if(listeners.size() > 0){
 			for(EventListener listener : listeners){
 				try{
-					EventSourceBase evt = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), result, getMdcValue(eventInfo));
+					CommonEventSource evt = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), result, getMdcValue(eventInfo));
 					listener.onObserved(evt);
 					__result = evt.getSyncResult();
 				}catch(Exception e){
@@ -140,13 +141,14 @@ public abstract class AbstractEventCenter implements EventCenter, ApplicationCon
 		return __result;
 	}
 
-	protected EventSourceBase createEventSource(EventRegister register, Object target, String eventId, String eventName, Object[] args, Object result, String mdcValue){
+	protected CommonEventSource createEventSource(EventRegister register, Object target, String eventId, String eventName, Object[] args, Object result, String mdcValue){
 		return register.createEventSource(target, eventId, eventName, args, result, mdcValue);
 	}
 
 	protected String getMdcValue(EventInfo eventInfo){
-		if(null != eventInfo && null != eventInfo.getMdcValue())
+		if(null != eventInfo && null != eventInfo.getMdcValue()) {
 			return eventInfo.getMdcValue();
+		}
 		if(ecConfig.isOpenLoggerMdc() && ecConfig.getLoggerMdcField() != null){
 			Object val = MDC.get(ecConfig.getLoggerMdcField());
 			if(null != val){
@@ -197,11 +199,13 @@ public abstract class AbstractEventCenter implements EventCenter, ApplicationCon
 	 */
 	protected void filterEventFire(Object target, EventInfo eventInfo, Object result){
 		try{
-			if(null != target && target instanceof Remotable)
+			if(null != target && target instanceof Remotable) {
 				return ;
+			}
 			List<EventFireFilter> eventFireFilters = getEventFireFilters();
-			if(eventFireFilters.size() == 0)
+			if(eventFireFilters.size() == 0) {
 				return ;
+			}
 			if(null == eventInfo.getMdcValue()){
 				String mdcValue = getMdcValue(eventInfo);
 				eventInfo.setMdcValue(mdcValue);
@@ -237,5 +241,15 @@ public abstract class AbstractEventCenter implements EventCenter, ApplicationCon
 			}
 		}
 		return eventFireFilters;
+	}
+
+	@Override
+	public Object fireEvent(Object target, String eventName, Object... args) {
+		return fireEvent(target, new EventInfo(eventName).setArgs(args));
+	}
+
+	@Override
+	public Object fireEvent(Object target, EventInfo eventInfo) {
+		return fireEvent(target, eventInfo, null);
 	}
 }

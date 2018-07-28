@@ -12,7 +12,7 @@ public interface EventContainer {
 	 * @param source
 	 * @return
 	 */
-	Object send(EventSourceBase source);
+	Object send(CommonEventSource source);
 
 	/**
 	 * 容器是否支持持久化，如果事件堆积的比较多，容器将会把未执行的事件放置在持久化队列中保存

@@ -7,8 +7,6 @@ import eventcenter.api.aggregator.simple.AbstractSimpleEventSpliter;
 import eventcenter.api.aggregator.support.ListAppendResultAggregator;
 import eventcenter.api.aggregator.support.ReferenceResultAggregator;
 import eventcenter.api.annotation.ListenerBind;
-import eventcenter.api.EventInfo;
-import eventcenter.api.EventListener;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,14 +85,14 @@ public class TestDefaultEventCenterWithAggregator {
 
 			@Override
 			public Object exceptionHandler(eventcenter.api.EventListener listener,
-                                           EventSourceBase source, Exception e) {
+										   CommonEventSource source, Exception e) {
 				return null;
 			}
 			
 		});
 		
-		Mockito.verify(listener1, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
-		Mockito.verify(listener2, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
+		Mockito.verify(listener1, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
+		Mockito.verify(listener2, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
 		Assert.assertEquals(3, count.intValue());
 	}
 	
@@ -102,8 +100,8 @@ public class TestDefaultEventCenterWithAggregator {
 	public void testWithReferenceAggregator(){
 		Integer count = eventCenter.fireAggregateEvent(this, new EventInfo("test1").setArgs(new Object[]{1,2}), new ReferenceResultAggregator<Integer>(1));
 		Assert.assertEquals(2, count.intValue());
-		Mockito.verify(listener1, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
-		Mockito.verify(listener2, Mockito.atLeastOnce()).onObserved(Mockito.any(EventSourceBase.class));
+		Mockito.verify(listener1, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
+		Mockito.verify(listener2, Mockito.atLeastOnce()).onObserved(Mockito.any(CommonEventSource.class));
 	}
 	
 	@Test
@@ -179,7 +177,7 @@ public class TestDefaultEventCenterWithAggregator {
 	class AggregatorListener1 implements AggregatorEventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			
 			// 将执行的结果放入到结果中
@@ -192,7 +190,7 @@ public class TestDefaultEventCenterWithAggregator {
 	class AggregatorListener2 implements AggregatorEventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			evt.putResult(this, evt.getArg(1, Integer.class));
 		}
@@ -203,7 +201,7 @@ public class TestDefaultEventCenterWithAggregator {
 	class Listener1 implements eventcenter.api.EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			count.incrementAndGet();
 			try {
 				Thread.sleep(1000);
@@ -217,7 +215,7 @@ public class TestDefaultEventCenterWithAggregator {
 	class Listener2 implements EventListener {
 
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			count.incrementAndGet();
 			try {
 				Thread.sleep(1000);
@@ -231,7 +229,7 @@ public class TestDefaultEventCenterWithAggregator {
 	class AggregatorListener3 implements AggregatorEventListener {
 		
 		@Override
-		public void onObserved(EventSourceBase source) {
+		public void onObserved(CommonEventSource source) {
 			AggregatorEventSource evt = (AggregatorEventSource)source;
 			Object[] args = evt.getArg(0, Object[].class);
 			List<Integer> nArgs = new ArrayList<Integer>(args.length);

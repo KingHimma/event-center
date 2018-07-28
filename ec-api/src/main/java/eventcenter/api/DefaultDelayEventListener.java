@@ -23,7 +23,7 @@ public class DefaultDelayEventListener implements DelayableEventListener {
 	}
 	
 	@Override
-	public void onObserved(EventSourceBase source) {
+	public void onObserved(CommonEventSource source) {
 		closed = false;
 		if(delayTime > 0){
 			synchronized (lock) {

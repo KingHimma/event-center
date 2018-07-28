@@ -23,6 +23,7 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 	 */
 	private AggregatorContainer aggregatorContainer;
 
+	@Override
 	@PreDestroy
 	public void shutdown() throws Exception {
 		super.shutdown();
@@ -78,10 +79,12 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 		return ecConfig.getAsyncContainer().isIdle();
 	}
 	
+	@Override
 	protected long getDelay(EventInfo eventInfo, EventListener listener){
 		ExecuteAsyncable asyncable = listener.getClass().getAnnotation(ExecuteAsyncable.class);
-		if(null == asyncable)
+		if(null == asyncable) {
 			return eventInfo.getDelay();
+		}
 		
 		return asyncable.delay();
 	}
@@ -92,14 +95,15 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 
 	@Override
 	public AggregatorContainer getAggregatorContainer() {
-		if(null == aggregatorContainer)
+		if(null == aggregatorContainer) {
 			aggregatorContainer = new SimpleAggregatorContainer();
+		}
 		return aggregatorContainer;
 	}
 	
-	protected AggregatorEventSource createAggregatorEventSource(EventSourceBase source, EventInfo eventInfo){
+	protected AggregatorEventSource createAggregatorEventSource(CommonEventSource source, EventInfo eventInfo){
 		if(source instanceof CommonEventSource){
-			return new AggregatorEventSource((CommonEventSource)source);
+			return new AggregatorEventSource(source);
 		}
 
 		return new AggregatorEventSource(source, eventInfo.getArgs(), null, getMdcValue(eventInfo));
@@ -123,7 +127,7 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 			//executeAsyncListeners(target, eventInfo, null, register);
 			
 			// 如果aggregator为空，依然执行并发聚合事件，返回的结果为空
-			EventSourceBase source = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), null, getMdcValue(eventInfo));
+			CommonEventSource source = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), null, getMdcValue(eventInfo));
 			return executeAggregatorEventListeners(aggregatorListeners, createAggregatorEventSource(source, eventInfo), aggregator);			
 		}catch(AggregatorException e){
 			throw e;
@@ -160,18 +164,19 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 			}
 			
 			List<EventInfo> eis = spliter.split(target, eventInfo);
-			if(null == eis || eis.size() == 0)
+			if(null == eis || eis.size() == 0) {
 				throw new AggregatorException("事件源拆分器拆分的事件信息为空");
+			}
 			
-			List<EventSourceBase> sources = new ArrayList<EventSourceBase>();
+			List<CommonEventSource> sources = new ArrayList<CommonEventSource>();
 			
 			for(EventInfo ei : eis){
 				sources.add(createAggregatorEventSource(
 						createEventSource(register, target, ei.getId(), ei.getName(), ei.getArgs(), null, getMdcValue(eventInfo)),
 						eventInfo));
 			}
-			
-			EventSourceBase originalSource = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), null, getMdcValue(eventInfo));
+
+			CommonEventSource originalSource = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), null, getMdcValue(eventInfo));
 			return executeSplitAggregatorEventListener(aggregatorListeners.get(0), sources, aggregator, eventInfo, originalSource);
 		}catch(AggregatorException e){
 			throw e;
@@ -183,11 +188,13 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 	
 	protected <T> T executeAggregatorEventListeners(List<AggregatorEventListener> listeners, AggregatorEventSource source,
                                                     final ResultAggregator<T> aggregator){
-		if(listeners.size() == 0)
+		if(listeners.size() == 0) {
 			throw new AggregatorException("listeners集合为空，至少需要一个listener");
+		}
 		
-		if(null == getAggregatorContainer())
+		if(null == getAggregatorContainer()) {
 			throw new NullPointerException("无法在事件中心找到异步事件发送容器,aggregatorContainer==null");
+		}
 		
 		try{
 			if(logger.isDebugEnabled()){
@@ -196,17 +203,19 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 			ListenersConsumedResult result = getAggregatorContainer().executeListeners(listeners, source, new ListenerExceptionHandler(){
 				@Override
 				public Object handle(EventListener listener,
-						EventSourceBase source, Exception e) {
-					if(null == aggregator)
+						CommonEventSource source, Exception e) {
+					if(null == aggregator) {
 						return null;
+					}
 					return aggregator.exceptionHandler(listener, source, e);
 				}
 			});
 			if(logger.isDebugEnabled()){
 				logger.debug(new StringBuilder("aggregator listeners complete:").append(source.getEventName()).append(", total took:").append(result.getTook()));
 			}
-			if(null == aggregator)
+			if(null == aggregator) {
 				return null;
+			}
 			
 			return aggregator.aggregate(result);
 		}catch(Exception e){
@@ -215,9 +224,10 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 		}
 	}
 	
-	protected <T> T executeSplitAggregatorEventListener(AggregatorEventListener listener, List<EventSourceBase> sources, final ResultAggregator<T> aggregator, EventInfo eventInfo, EventSourceBase originalSource){
-		if(null == getAggregatorContainer())
+	protected <T> T executeSplitAggregatorEventListener(AggregatorEventListener listener, List<CommonEventSource> sources, final ResultAggregator<T> aggregator, EventInfo eventInfo, CommonEventSource originalSource){
+		if(null == getAggregatorContainer()) {
 			throw new NullPointerException("无法在事件中心找到异步事件发送容器,aggregatorContainer==null");
+		}
 		
 		try{
 			if(logger.isDebugEnabled()){
@@ -226,17 +236,19 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 			ListenersConsumedResult result = getAggregatorContainer().executeListenerSources(listener, sources, new ListenerExceptionHandler() {
 				@Override
 				public Object handle(EventListener listener,
-									 EventSourceBase source, Exception e) {
-					if (null == aggregator)
+									 CommonEventSource source, Exception e) {
+					if (null == aggregator) {
 						return null;
+					}
 					return aggregator.exceptionHandler(listener, source, e);
 				}
 			});
 			if(logger.isDebugEnabled()){
 				logger.debug(new StringBuilder("aggregator listeners complete:").append(eventInfo.getName()).append(", total took:").append(result.getTook()));
 			}
-			if(null == aggregator)
+			if(null == aggregator) {
 				return null;
+			}
 			
 			result.setEventName(eventInfo.getName());
 			result.setSource(originalSource);
@@ -248,7 +260,7 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 	}
 
 	@Override
-	public void directFireAggregateEvent(Object target, EventSourceBase eventSource, ListenerExceptionHandler handler) {
+	public void directFireAggregateEvent(Object target, CommonEventSource eventSource, ListenerExceptionHandler handler) {
 		EventRegister register = findEventRegister(eventSource.getEventName());
 		if(null == register){
 			logger.warn(new StringBuilder("无法找到事件注册者:").append(eventSource.getEventName()));
@@ -260,8 +272,9 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 
 	@Override
 	public void directFireAggregateEvent(Object target, EventInfo eventInfo, ListenerExceptionHandler handler) {
-		if(null == getAggregatorContainer())
+		if(null == getAggregatorContainer()) {
 			throw new NullPointerException("无法在事件中心找到异步事件发送容器,asyncContainer==null");
+		}
 
 		EventRegister register = findEventRegister(eventInfo.getName());
 		if(null == register){
@@ -269,11 +282,11 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 			throw new NonExistsRegisterException(new StringBuilder("无法找到事件注册者:").append(eventInfo.getName()).toString());
 		}
 
-		EventSourceBase eventSource = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), null, getMdcValue(eventInfo));
+		CommonEventSource eventSource = createEventSource(register, target, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), null, getMdcValue(eventInfo));
 		_directFireAggregateEvent(target, register, eventSource, eventInfo.getArgs(), handler);
 	}
 
-	void _directFireAggregateEvent(Object target, EventRegister register, EventSourceBase eventSource, Object[] args, ListenerExceptionHandler handler){
+	void _directFireAggregateEvent(Object target, EventRegister register, CommonEventSource eventSource, Object[] args, ListenerExceptionHandler handler){
 		try {
 			if(eventSource instanceof CommonEventSource){
 				eventSource = new AggregatorEventSource((CommonEventSource)eventSource);
@@ -283,7 +296,7 @@ public class DefaultEventCenter extends AbstractEventCenter implements EventAggr
 			if(handler == null){
 				handler = new ListenerExceptionHandler() {
 					@Override
-					public Object handle(EventListener listener, EventSourceBase source, Exception e) {
+					public Object handle(EventListener listener, CommonEventSource source, Exception e) {
 						logger.error("execute listener " + listener.getClass() + ", evt:" + source + ", happened error:" + e.getMessage(), e);
 						return null;
 					}

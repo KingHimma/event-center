@@ -1,7 +1,7 @@
 package eventcenter.leveldb.saf;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventInfo;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.async.EventQueue;
 import eventcenter.leveldb.LevelDBQueue;
 import eventcenter.remote.EventInfoSource;
@@ -10,7 +10,6 @@ import eventcenter.remote.Target;
 import eventcenter.remote.publisher.PublisherGroup;
 import eventcenter.remote.saf.TransmissionException;
 import eventcenter.remote.saf.simple.SimpleEventForward;
-import org.fusesource.leveldbjni.JniDBFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,9 +26,7 @@ public class TestLevelDBStoreAndForwardPolicy {
 
     private LevelDBStoreAndForwardPolicy policy;
 
-    File dir = new File(System.getProperty("user.dir") + File.separator + "target");
-
-    JniDBFactory factory = new JniDBFactory();
+    File dir = new File(System.getProperty("user.dir") + File.separator + "target" + File.separator + "testLevelDBSAF");
 
     SimpleEventForward eventForward;
 
@@ -49,10 +46,14 @@ public class TestLevelDBStoreAndForwardPolicy {
 
     public TestLevelDBStoreAndForwardPolicy(){
         //org.apache.log4j.BasicConfigurator.configure();
+
     }
 
     @Before
     public void setUp() throws Exception {
+        if(!dir.exists()){
+            dir.mkdir();
+        }
         policy = new LevelDBStoreAndForwardPolicy();
         policy.setPath(dir.getPath());
         policy.setStoreOnSendFail(true);
@@ -143,7 +144,7 @@ public class TestLevelDBStoreAndForwardPolicy {
         Thread.sleep(20000);
     }
 
-    EventSourceBase createEvent(String eventName){
+    CommonEventSource createEvent(String eventName){
         EventInfoSource source = new EventInfoSource();
         source.setEventInfo(new EventInfo(eventName));
         source.setTarget(new Target(this.getClass().getName()));

@@ -30,7 +30,7 @@ public class TestLoadFilter {
     class AddFilterableFilter implements ListenerFilter {
 
         @Override
-        public boolean before(EventListener listener, EventSourceBase evt) {
+        public boolean before(EventListener listener, CommonEventSource evt) {
             return true;
         }
 
