@@ -1,7 +1,7 @@
 package eventcenter.builder.spring.schema;
 
+import eventcenter.api.CommonEventSource;
 import eventcenter.api.EventListener;
-import eventcenter.api.EventSourceBase;
 import eventcenter.api.ListenerFilter;
 import eventcenter.api.ListenerReceipt;
 
