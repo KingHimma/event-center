@@ -58,7 +58,7 @@ public class ExampleMain {
 
 ## 教程
  * 可参考源码中的ec-examples模块，内部有很多demo
- * 教程文档(还在持续更新中)
+ * [教程文档](https://jueming.gitbook.io/eventcenter)(还在持续更新中)
  
 ## 联系我们
  * Email: usiboy@163.com
