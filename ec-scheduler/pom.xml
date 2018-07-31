@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>eventcenter</groupId>
 		<artifactId>ec</artifactId>
-		<version>1.7-SNAPSHOT</version>
+		<version>1.8-SNAPSHOT</version>
 	</parent>
 	<artifactId>ec-scheduler</artifactId>
 	<name>EC Scheduler</name>
