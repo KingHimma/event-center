@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>eventcenter</groupId>
 		<artifactId>ec</artifactId>
-		<version>1.7-SNAPSHOT</version>
+		<version>1.7</version>
 	</parent>
 	<artifactId>ec-leveldb</artifactId>
 	<name>EC LevelDB</name>
