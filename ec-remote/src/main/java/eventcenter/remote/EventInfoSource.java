@@ -12,19 +12,14 @@ import java.io.Serializable;
  */
 public class EventInfoSource extends CommonEventSource implements Serializable{
 	
-	public EventInfoSource(Object source, String eventId, String eventName, String mdcValue) {
-		super(source, eventId, eventName, null, null, mdcValue);
-	}
-	
-	public EventInfoSource(){
-		this("", null, null, null);
+	public EventInfoSource(Object source, EventInfo eventInfo, Object result) {
+		super(source, eventInfo.getId(), eventInfo.getName(), eventInfo.getArgs(), result, eventInfo.getMdcValue());
+		this.eventInfo = eventInfo;
 	}
 
 	private Target target;
 
-	private EventInfo eventInfo;
-	
-	private Object result;
+	private final EventInfo eventInfo;
 
 	/**
 	 * 
@@ -33,19 +28,6 @@ public class EventInfoSource extends CommonEventSource implements Serializable{
 
 	public EventInfo getEventInfo() {
 		return eventInfo;
-	}
-
-	public void setEventInfo(EventInfo eventInfo) {
-		this.eventInfo = eventInfo;
-	}
-
-	@Override
-	public Object getResult() {
-		return result;
-	}
-
-	public void setResult(Object result) {
-		this.result = result;
 	}
 
 	public Target getTarget() {

@@ -145,8 +145,8 @@ public class TestLevelDBStoreAndForwardPolicy {
     }
 
     CommonEventSource createEvent(String eventName){
-        EventInfoSource source = new EventInfoSource();
-        source.setEventInfo(new EventInfo(eventName));
+        EventInfo eventInfo = new EventInfo(eventName);
+        EventInfoSource source = new EventInfoSource(this, eventInfo, null);
         source.setTarget(new Target(this.getClass().getName()));
         return source;
     }

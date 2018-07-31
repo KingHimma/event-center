@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<context:component-scan base-package="eventcenter.tutorial.section1_4"></context:component-scan>
+
+	<!-- 这个是最基础的配置，默认初始化DefaultEventCenter实例 -->
+	<conf xmlns="http://code.eventcenter.com/schema/ec" xsi:schemaLocation="http://code.eventcenter.com/schema/ec http://code.eventcenter.com/schema/ec/eventcenter.xsd">
+		<queue>
+			<!--
+			 corePoolSize		初始化运行容器中的线程池的最小活跃线程数
+			 maximumPoolSize	初始化运行容器中的线程池的最大活跃线程数
+			 openTxn			加强事件运行时的数据一致性，防止系统异常导致事件丢失的问题，默认为false
+			 -->
+			<leveldbQueueContainer corePoolSize="1" maximumPoolSize="4" openTxn="true" ></leveldbQueueContainer>
+		</queue>
+	</conf>
+</beans>

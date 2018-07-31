@@ -43,10 +43,12 @@ public class CommonEventSource extends EventSourceBase {
      * null and is not assignable to the type T.
 	 */
 	public <T> T getArg(int index, Class<T> type){
-		if(args == null)
+		if(args == null) {
 			return null;
-		if(args.length <= index)
+		}
+		if(args.length <= index) {
 			return null;
+		}
 		return type.cast(args[index]);
 	}
 	
@@ -73,8 +75,9 @@ public class CommonEventSource extends EventSourceBase {
      * null and is not assignable to the type T.
 	 */
 	public <T> T getResult(Class<T> type){
-		if(null == result)
+		if(null == result) {
 			return null;
+		}
 		return type.cast(result);
 	}
 	

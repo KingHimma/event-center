@@ -184,7 +184,7 @@ public class LevelDBQueue implements EventQueue, TransactionalSupport {
 				return null;
 			}
 			if(!isOpenTxnMode()) {
-				return eventWrapper;
+				return eventWrapper.getWrapper();
 			}
 			return eventWrapper;
 		} catch (Throwable e) {

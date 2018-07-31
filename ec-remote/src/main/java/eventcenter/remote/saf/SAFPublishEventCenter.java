@@ -7,9 +7,6 @@ import eventcenter.remote.Target;
 import eventcenter.remote.publisher.PublishEventCenter;
 import eventcenter.remote.publisher.PublisherGroup;
 import eventcenter.remote.saf.simple.SimpleStoreAndForwardPolicy;
-import eventcenter.remote.publisher.PublishEventCenter;
-import eventcenter.remote.publisher.PublisherGroup;
-import eventcenter.remote.saf.simple.SimpleStoreAndForwardPolicy;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -119,10 +116,8 @@ public class SAFPublishEventCenter extends PublishEventCenter {
 	}
 	
 	private EventInfoSource createEventInfoSource(Object target, EventInfo eventInfo, Object result){
-		EventInfoSource source = new EventInfoSource();
+		EventInfoSource source = new EventInfoSource(target, eventInfo, result);
 		source.setTarget(new Target(target.getClass().getName()));
-		source.setEventInfo(eventInfo);
-		source.setResult(result);
 		return source;
 	}
 }
