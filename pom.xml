@@ -7,7 +7,7 @@
 	<name>Event Center</name>
 	<description>事件中心，为您提供更方便的异步容器以及DDD设计</description>
 
-	<version>1.7</version>
+	<version>1.7-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
