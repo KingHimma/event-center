@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eventcenter</groupId>
+	<groupId>io.eventcenter</groupId>
 	<artifactId>ec</artifactId>
 	<packaging>pom</packaging>
 	<name>Event Center</name>
@@ -60,9 +60,9 @@
 		<version.metamorphosis>1.4.6.2</version.metamorphosis>
 		<version.zkclient>0.4</version.zkclient>
 		<version.maven-source-plugin>3.0.1</version.maven-source-plugin>
-		<version.maven-javadoc-plugin>3.0.1</version.maven-javadoc-plugin>
+		<version.maven-javadoc-plugin>2.10.4</version.maven-javadoc-plugin>
 		<version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
-		
+
 		<!-- Maven Plugin Version for this Project -->
 		<findbugs-maven-plugin-version>2.5.2</findbugs-maven-plugin-version>
 	</properties>
@@ -278,6 +278,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -286,6 +289,12 @@
 			<id>oss</id>
 			<build>
 				<plugins>
+					<plugin>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
 					<!-- Source -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -303,14 +312,9 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<executions>
-							<execution>
-								<phase>package</phase>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
 					</plugin>
 					<!-- GPG -->
 					<plugin>
@@ -319,9 +323,30 @@
 						<version>${version.maven-gpg-plugin}</version>
 						<executions>
 							<execution>
+								<id>sign-artifacts</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>oss</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						</configuration>
+						<executions>
+							<execution>
+								<id>deploy-to-sonatype</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+									<goal>release</goal>
 								</goals>
 							</execution>
 						</executions>
